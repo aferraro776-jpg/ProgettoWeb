@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface UserDao extends Dao<User, Integer>{
     Optional<User> findByEmail(String email);
-    List<User> findAllUtenti();
+    List<User> findAllUsers();
     boolean existsByEmail(String email);
 }

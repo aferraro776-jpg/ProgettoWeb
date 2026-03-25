@@ -13,5 +13,5 @@ public class RealEstate {
     private double latit;
     private double longit;
     private String address;
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 }

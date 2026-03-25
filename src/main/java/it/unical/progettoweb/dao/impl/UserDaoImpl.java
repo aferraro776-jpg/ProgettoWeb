@@ -3,7 +3,6 @@ package it.unical.progettoweb.dao.impl;
 import it.unical.progettoweb.dao.UserDao;
 import it.unical.progettoweb.mapper.UserRowMapper;
 import it.unical.progettoweb.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -20,19 +19,24 @@ public class UserDaoImpl implements UserDao {
         this.mapper = mapper;
     }
 
+    // ID manuale come parametro (tuo requisito)
     @Override
     public void save(User user, Integer id) {
         jdbc.update(
-                "INSERT INTO users (id, username, password, email, birth_date) VALUES (?, ?, ?, ?, ?)",
-                id, user.getUsername(), user.getPassword(), user.getEmail(), user.getBirthDate()
+                "INSERT INTO users (id, name, surname, password, email, birthDate) VALUES (?, ?, ?, ?, ?, ?)",
+                id,              // ID manuale
+                user.getName(),     // name invece di username
+                user.getSurname(),  // surname aggiunto
+                user.getPassword(),
+                user.getEmail(),
+                user.getBirthDate() // java.sql.Date
         );
     }
 
     @Override
     public Optional<User> get(Integer id) {
         try {
-            User user = jdbc.queryForObject("SELECT * FROM users WHERE id = ?", mapper, id);
-            return Optional.ofNullable(user);
+            return Optional.ofNullable(jdbc.queryForObject("SELECT * FROM users WHERE id = ?", mapper, id));
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -40,14 +44,19 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getAll() {
-        return jdbc.query("SELECT * FROM users", mapper);
+        return jdbc.query("SELECT * FROM users", mapper);  // Unificato su 'users'
     }
 
     @Override
     public void update(User user, Integer id) {
         jdbc.update(
-                "UPDATE users SET username=?, password=?, email=?, birth_date=? WHERE id=?",
-                user.getUsername(), user.getPassword(), user.getEmail(), user.getBirthDate(), id
+                "UPDATE users SET name=?, surname=?, password=?, email=?, birthDate=? WHERE id=?",
+                user.getName(),
+                user.getSurname(),
+                user.getPassword(),
+                user.getEmail(),
+                user.getBirthDate(),
+                id
         );
     }
 
@@ -66,7 +75,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findAllUtenti() {
+    public List<User> findAllUsers() {
         return getAll();
     }
 

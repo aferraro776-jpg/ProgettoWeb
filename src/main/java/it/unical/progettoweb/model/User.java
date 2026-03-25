@@ -6,7 +6,8 @@ import java.util.Date;
 
 @Data
 public class User {
-    private String username;
+    private String name;
+    private String surname;
     private String password;
     private String email;
     private Date birthDate;
