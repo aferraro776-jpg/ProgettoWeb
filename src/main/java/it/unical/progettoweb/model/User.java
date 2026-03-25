@@ -9,6 +9,6 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private Date birthdate;
+    private Date birthDate;
     private int id;
 }
