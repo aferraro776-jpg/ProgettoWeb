@@ -6,6 +6,7 @@ CREATE TABLE public.immobili (
                                  metriquadri numeric(8, 2) NOT NULL,
                                  lat numeric(10, 8) NOT NULL,
                                  long numeric(10, 8) NOT NULL,
+                                 address varchar(200) NOT NULL;
                                  created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
                                  CONSTRAINT immobili_id_check CHECK (((id >= 10000) AND (id <= 99999))),
                                  CONSTRAINT immobili_pkey PRIMARY KEY (id)
