@@ -1,13 +1,10 @@
 package it.unical.progettoweb.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class Admin {
-    private int id;
-    private String name;
-    private String surname;
-    private String password;
-    private String email;
-
+@EqualsAndHashCode(callSuper = true)
+public class Admin extends Person {
 }

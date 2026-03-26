@@ -1,15 +1,17 @@
 package it.unical.progettoweb.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
 @Data
-public class Seller {
-    private int id;
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
+public class Seller extends Person{
     private String vatNumber;
-    private String name;
-    private String surname;
-    private String email;
     private Date birthDate;
-    private String password;
 }

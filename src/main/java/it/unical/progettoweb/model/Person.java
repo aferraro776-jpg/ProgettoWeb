@@ -2,16 +2,15 @@ package it.unical.progettoweb.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends Person {
+public abstract class Person {
+    private int id;
+    private String name;
+    private String surname;
     private String email;
-    private Date birthDate;
+    private String password;
 }
