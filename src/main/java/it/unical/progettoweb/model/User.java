@@ -14,4 +14,5 @@ import java.util.Date;
 public class User extends Person {
     private String email;
     private Date birthDate;
+    private String authProvider;
 }

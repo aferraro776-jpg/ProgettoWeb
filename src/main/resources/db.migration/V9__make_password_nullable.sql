@@ -1,0 +1,3 @@
+ALTER TABLE public.users ALTER COLUMN password DROP NOT NULL;
+ALTER TABLE public.users ALTER COLUMN birthDate DROP NOT NULL;
+ALTER TABLE public.users ADD COLUMN auth_provider VARCHAR(10) NOT NULL DEFAULT 'LOCAL';
