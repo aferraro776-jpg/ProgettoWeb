@@ -4,6 +4,7 @@ import it.unical.progettoweb.dao.PersonDao;
 import it.unical.progettoweb.mapper.UserRowMapper;
 import it.unical.progettoweb.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +13,11 @@ import java.util.Optional;
 public class UserDao implements PersonDao<User> {
 
     private final JdbcTemplate jdbc;
-    private final UserRowMapper mapper;
+    private final RowMapper<User> mapper;
 
     public UserDao(JdbcTemplate jdbc, UserRowMapper mapper) {
         this.jdbc = jdbc;
-        this.mapper = mapper;
+        this.mapper = (RowMapper<User>) mapper;
     }
 
     @Override

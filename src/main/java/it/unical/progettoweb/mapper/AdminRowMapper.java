@@ -1,17 +1,18 @@
 package it.unical.progettoweb.mapper;
 
 import it.unical.progettoweb.model.Admin;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
-public class AdminRowMapper implements RowMapper<Admin> {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+@Component
+public class AdminRowMapper extends PersonRowMapper<Admin> {
+
     @Override
-    public Admin mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+    public Admin mapRow(ResultSet rs,int rowNum) throws SQLException {
         Admin admin = new Admin();
-        admin.setId(rs.getInt("id"));
-        admin.setName(rs.getString("name"));
-        admin.setSurname(rs.getString("surname"));
-        admin.setPassword(rs.getString("password"));
-        admin.setEmail(rs.getString("email"));
+        mapPersonFields(admin, rs);
         return admin;
     }
 }
