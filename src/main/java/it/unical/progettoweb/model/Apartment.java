@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Apartment extends RealEstate {
-    private Integer numberOfRooms;
     private Integer floor;
     private Boolean hasElevator;
 }

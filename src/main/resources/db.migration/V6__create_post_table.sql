@@ -9,6 +9,6 @@ CREATE TABLE public.posts (
                               idRealEstate int4 NULL,
                               CONSTRAINT posts_id_check CHECK ((id >= 10000) AND (id <= 99999)),
                               CONSTRAINT posts_pkey PRIMARY KEY (id),
-                              CONSTRAINT posts_idRealEstate_fkey FOREIGN KEY (idRealEstate) REFERENCES public.realEstate(id),
+                              CONSTRAINT posts_idRealEstate_fkey FOREIGN KEY (idRealEstate) REFERENCES public."realEstate"(id),
                               CONSTRAINT posts_idSeller_fkey FOREIGN KEY (idSeller) REFERENCES public.sellers(id)
 );

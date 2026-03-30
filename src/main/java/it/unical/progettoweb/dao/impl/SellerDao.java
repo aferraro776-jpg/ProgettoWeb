@@ -20,7 +20,7 @@ public class SellerDao implements PersonDao<Seller> {
 
     public SellerDao(JdbcTemplate jdbc, SellerRowMapper mapper) {
         this.jdbcTemplate = jdbc;
-        this.rowMapper = (RowMapper<Seller>) mapper;
+        this.rowMapper = mapper;
     }
 
     @Override

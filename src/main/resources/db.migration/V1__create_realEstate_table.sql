@@ -1,4 +1,4 @@
-CREATE TABLE public.realEstate (
+CREATE TABLE public."realEstate" (
                                    id int4 NOT NULL,
                                    title varchar(50) NOT NULL,
                                    numberOfRooms int4 NOT NULL,

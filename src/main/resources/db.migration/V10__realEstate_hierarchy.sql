@@ -3,12 +3,12 @@ ALTER TABLE public."realEstate" RENAME COLUMN long TO longit;
 
 ALTER TABLE public."realEstate" ADD COLUMN tipo VARCHAR(30) NOT NULL DEFAULT 'APPARTAMENTO';
 
-ALTER TABLE public."realEstate" ALTER COLUMN "numberOfRooms" DROP NOT NULL;
+ALTER TABLE public."realEstate" ALTER COLUMN numberofrooms DROP NOT NULL;
 
 ALTER TABLE public."realEstate" ADD COLUMN floor INT;
 ALTER TABLE public."realEstate" ADD COLUMN "hasElevator" BOOLEAN;
 
-ALTER TABLE public."realEstate" ADD COLUMN "hasGarden" BOOLEAN;
+ALTER TABLE public."realEstate" ADD COLUMN "hasGarden"   BOOLEAN;
 ALTER TABLE public."realEstate" ADD COLUMN "hasPool" BOOLEAN;
 ALTER TABLE public."realEstate" ADD COLUMN "numberOfFloors" INT;
 

@@ -9,6 +9,6 @@ CREATE TABLE public.reviews (
                                    CONSTRAINT reviews_id_check CHECK (((id >= 10000) AND (id <= 99999))),
                                    CONSTRAINT reviews_pkey PRIMARY KEY (id),
                                    CONSTRAINT reviews_valutazione_check CHECK (((rating >= 0) AND (rating <= 5))),
-                                   CONSTRAINT reviews_idRealEstate_fkey FOREIGN KEY (idRealEstate) REFERENCES public.realEstate(id),
+                                   CONSTRAINT reviews_idRealEstate_fkey FOREIGN KEY (idRealEstate) REFERENCES public."realEstate"(id),
                                    CONSTRAINT reviews_idUser_fkey FOREIGN KEY (idUser) REFERENCES public.users(id)
 );

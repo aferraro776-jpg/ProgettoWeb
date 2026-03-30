@@ -15,12 +15,12 @@ import java.util.Optional;
 public class NonBuildingLotDao implements RealEstateDao<NonBuildingLot> {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RealEstateRowMapper realEstateRowMapper;
+
     private final RowMapper<NonBuildingLot> rowMapper;
 
     public NonBuildingLotDao(JdbcTemplate jdbcTemplate, RealEstateRowMapper realEstateRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.realEstateRowMapper = realEstateRowMapper;
+
         this.rowMapper = (rs, rowNum) -> {
             NonBuildingLot n = new NonBuildingLot();
             realEstateRowMapper.mapCommon(n, rs);

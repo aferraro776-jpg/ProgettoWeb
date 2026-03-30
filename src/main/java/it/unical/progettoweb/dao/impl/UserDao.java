@@ -17,7 +17,7 @@ public class UserDao implements PersonDao<User> {
 
     public UserDao(JdbcTemplate jdbc, UserRowMapper mapper) {
         this.jdbc = jdbc;
-        this.mapper = (RowMapper<User>) mapper;
+        this.mapper = mapper;
     }
 
     @Override
