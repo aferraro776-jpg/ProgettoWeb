@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -26,14 +25,16 @@ public class SellerDao implements PersonDao<Seller> {
     @Override
     public void save(Seller seller) {
         jdbcTemplate.update(
-                "INSERT INTO sellers (id, vatnumber, name, surname, email, birthdate, password) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO sellers (id, vatnumber, name, surname, email, birthdate, password, \"isBanned\") " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 seller.getId(),
                 seller.getVatNumber(),
                 seller.getName(),
                 seller.getSurname(),
                 seller.getEmail(),
                 seller.getBirthDate(),
-                seller.getPassword()
+                seller.getPassword(),
+                seller.isBanned()
         );
     }
 
@@ -61,13 +62,14 @@ public class SellerDao implements PersonDao<Seller> {
     @Override
     public void update(Seller seller) {
         jdbcTemplate.update(
-                "UPDATE sellers SET vatnumber=?, name=?, surname=?, email=?, birthdate=?, password=? WHERE id=?",
+                "UPDATE sellers SET vatnumber=?, name=?, surname=?, email=?, birthdate=?, password=?, \"isBanned\"=? WHERE id=?",
                 seller.getVatNumber(),
                 seller.getName(),
                 seller.getSurname(),
                 seller.getEmail(),
                 seller.getBirthDate(),
                 seller.getPassword(),
+                seller.isBanned(),
                 seller.getId()
         );
     }
@@ -76,8 +78,6 @@ public class SellerDao implements PersonDao<Seller> {
     public void delete(Integer id) {
         jdbcTemplate.update("DELETE FROM sellers WHERE id = ?", id);
     }
-
-
 
     public Optional<Seller> findByVatNumber(String vatNumber) {
         try {

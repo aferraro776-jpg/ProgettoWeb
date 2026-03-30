@@ -30,7 +30,12 @@ public class UserDao implements PersonDao<User> {
                 user.getPassword(),
                 user.getEmail(),
                 user.getBirthDate(),
-                user.getAuthProvider()
+                user.getAuthProvider(),
+
+                "INSERT INTO users (id, name, surname, password, email, birthDate, auth_provider, \"isBanned\") " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                user.getId(), user.getName(), user.getSurname(), user.getPassword(),
+                user.getEmail(), user.getBirthDate(), user.getAuthProvider(), user.isBanned()
         );
     }
 
@@ -57,7 +62,11 @@ public class UserDao implements PersonDao<User> {
                 user.getPassword(),
                 user.getEmail(),
                 user.getBirthDate(),
-                user.getId()
+                user.getId(),
+
+                "UPDATE users SET name=?, surname=?, password=?, email=?, birthDate=?, \"isBanned\"=? WHERE id=?",
+                user.getName(), user.getSurname(), user.getPassword(),
+                user.getEmail(), user.getBirthDate(), user.isBanned(), user.getId()
         );
     }
 
@@ -79,6 +88,6 @@ public class UserDao implements PersonDao<User> {
     @Override
     public boolean existsByEmail(String email) {
         Integer count = jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE email = ?", Integer.class, email);
-        return count > 0;
+        return count != null && count > 0;
     }
 }

@@ -24,15 +24,10 @@ public class CloudflareR2Service {
             @Value("${cloudflare.r2.public-url}") String publicUrl) {
         this.s3Client = s3Client;
         this.bucketName = bucketName;
-        // Assicura che l'URL termini con /
         this.publicUrl = publicUrl.endsWith("/") ? publicUrl : publicUrl + "/";
     }
 
-    /**
-     * Carica un MultipartFile su Cloudflare R2 e restituisce l'URL pubblico
-     */
     public String uploadFile(MultipartFile file) throws IOException {
-        // Genera nome file univoco per evitare collisioni
         String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "image.jpg";
         String extension = originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
         String objectKey = UUID.randomUUID().toString() + extension;
@@ -43,16 +38,11 @@ public class CloudflareR2Service {
                 .contentType(file.getContentType()) // Fondamentale per renderizzarle nel browser
                 .build();
 
-        // Carica il file in streaming
         s3Client.putObject(putReq, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-        // Restituisce l'URL completo salvabile nel DB
         return publicUrl + objectKey;
     }
 
-    /**
-     * Elimina il file da Cloudflare R2 partendo dal suo URL completo
-     */
     public void deleteFile(String fileUrl) {
         try {
             String objectKey = extractKeyFromUrl(fileUrl);

@@ -14,4 +14,5 @@ import java.util.Date;
 public class Seller extends Person{
     private String vatNumber;
     private Date birthDate;
+    private boolean isBanned;
 }
