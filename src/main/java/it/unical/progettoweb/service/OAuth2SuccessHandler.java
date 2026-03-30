@@ -28,6 +28,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
 
+        assert oidcUser != null;
         String email   = oidcUser.getEmail() != null ? oidcUser.getEmail() : "";
         String name    = oidcUser.getGivenName() != null ? oidcUser.getGivenName() : "";
         String surname = oidcUser.getFamilyName() != null ? oidcUser.getFamilyName() : "";
