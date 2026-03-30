@@ -14,4 +14,5 @@ public class RealEstate {
     private double longit;
     private String address;
     private LocalDateTime createdAt;
+    private String type;
 }

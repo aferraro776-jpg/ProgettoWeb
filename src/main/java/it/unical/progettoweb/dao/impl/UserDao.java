@@ -29,7 +29,8 @@ public class UserDao implements PersonDao<User> {
                 user.getSurname(),
                 user.getPassword(),
                 user.getEmail(),
-                user.getBirthDate()
+                user.getBirthDate(),
+                user.getAuthProvider()
         );
     }
 

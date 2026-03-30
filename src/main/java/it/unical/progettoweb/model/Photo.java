@@ -6,5 +6,5 @@ import lombok.Data;
 public class Photo {
     private int id;
     private String url;
-    private int realEstateId;
+    private int postId;
 }

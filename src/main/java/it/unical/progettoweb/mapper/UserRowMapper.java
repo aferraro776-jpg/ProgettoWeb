@@ -14,6 +14,7 @@ public class UserRowMapper extends PersonRowMapper<User> {
         User user = new User();
         mapPersonFields(user, rs);
         user.setBirthDate(rs.getDate("birthdate"));
+        user.setAuthProvider(rs.getString("auth_provider"));
         return user;
     }
 }
