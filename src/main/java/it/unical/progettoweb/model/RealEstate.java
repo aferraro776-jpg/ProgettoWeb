@@ -4,7 +4,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class RealEstate {
+public abstract class RealEstate {
     private int id;
     private String title;
     private int numberOfRooms;
