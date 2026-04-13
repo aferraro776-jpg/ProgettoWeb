@@ -28,30 +28,36 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
 
-        assert oidcUser != null;
-        String email   = oidcUser.getEmail() != null ? oidcUser.getEmail() : "";
-        String name    = oidcUser.getGivenName() != null ? oidcUser.getGivenName() : "";
-        String surname = oidcUser.getFamilyName() != null ? oidcUser.getFamilyName() : "";
+        String email   = oidcUser.getEmail()      != null ? oidcUser.getEmail()      : "";
+        String name    = oidcUser.getGivenName()   != null ? oidcUser.getGivenName()   : "";
+        String surname = oidcUser.getFamilyName()  != null ? oidcUser.getFamilyName()  : "";
 
         Optional<User> existing = userDao.findByEmail(email);
         if (existing.isEmpty()) {
             User newUser = new User();
-            newUser.setId(generateUniqueId());
+            newUser.setId(generateUniqueId()); // genera id sicuro
             newUser.setEmail(email);
             newUser.setName(name);
             newUser.setSurname(surname);
             newUser.setPassword(null);
             newUser.setBirthDate(null);
             newUser.setAuthProvider("GOOGLE");
+            newUser.setBanned(false);
             userDao.save(newUser);
         }
 
-        String jwt = jwtUtil.generateToken(email);
+        // il token include il ruolo USER — Google login è sempre acquirente
+        String jwt = jwtUtil.generateToken(email, "USER");
         String redirectUrl = "http://localhost:4200/oauth2/callback?token=" + jwt;
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
+    // genera un id tra 10000 e 99999 verificando che non esista già
     private int generateUniqueId() {
-        return new Random().nextInt(89997) + 10001;
+        int id;
+        do {
+            id = new Random().nextInt(89999) + 10000;
+        } while (userDao.get(id).isPresent()); // riprova finché l'id è libero
+        return id;
     }
 }

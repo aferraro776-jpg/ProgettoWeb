@@ -13,7 +13,9 @@ public class Validation {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
     }
 
-    public static boolean checkPassword(String password) {return password != null && password.length() >= 8;}
+    public static boolean checkPassword(String password) {
+        return password != null && getErrorePassword(password) == null;
+    }
 
     public static boolean checkNome(String nome) {
         return nome != null && nome.length() > 2;
@@ -31,6 +33,9 @@ public class Validation {
         return numeroTelefono != null && PHONE_PATTERN.matcher(numeroTelefono).matches();
     }
     public static String getErrorePassword(String password) {
+
+        if (password == null) return "La password non può essere vuota.\n";
+
         StringBuilder errori = new StringBuilder();
         if (password.length() < 8) errori.append("La password deve avere almeno 8 caratteri.\n");
         if (!password.matches(".*\\p{Lu}.*")) errori.append("La password deve avere almeno una lettera maiuscola.\n");
