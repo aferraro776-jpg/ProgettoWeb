@@ -1,0 +1,79 @@
+package it.unical.progettoweb.dao.impl;
+
+import it.unical.progettoweb.dao.Dao;
+import it.unical.progettoweb.mapper.PhotoRowMapper;
+import it.unical.progettoweb.model.Photo;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class PhotoDao implements Dao<Photo, Integer> {
+
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Photo> rowMapper;
+
+    public PhotoDao(JdbcTemplate jdbc, PhotoRowMapper mapper) {
+        this.jdbcTemplate = jdbc;
+        this.rowMapper = mapper;
+    }
+
+    @Override
+    public void save(Photo photo) {
+        jdbcTemplate.update(
+                "INSERT INTO photos (id, url, postId) VALUES (?, ?, ?)",
+                photo.getId(),
+                photo.getUrl(),
+                photo.getPostId()
+        );
+    }
+
+    @Override
+    public Optional<Photo> get(Integer id) {
+        try {
+            Photo photo = jdbcTemplate.queryForObject(
+                    "SELECT * FROM photos WHERE id = ?",
+                    rowMapper, id
+            );
+            return Optional.ofNullable(photo);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Photo> getAll() {
+        return jdbcTemplate.query(
+                "SELECT * FROM photos ORDER BY id",
+                rowMapper
+        );
+    }
+
+    @Override
+    public void update(Photo photo) {
+        jdbcTemplate.update(
+                "UPDATE photos SET url=?, postId=? WHERE id=?",
+                photo.getUrl(),
+                photo.getPostId(),
+                photo.getId()
+        );
+    }
+
+    @Override
+    public void delete(Integer id) {
+        jdbcTemplate.update(
+                "DELETE FROM photos WHERE id = ?", id
+        );
+    }
+
+    public List<Photo> getByPostId(Integer postId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM photos WHERE postId = ? ORDER BY id",
+                rowMapper, postId
+        );
+    }
+}

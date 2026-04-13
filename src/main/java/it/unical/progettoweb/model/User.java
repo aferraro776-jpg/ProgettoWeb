@@ -12,7 +12,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User extends Person {
-    private String email;
     private Date birthDate;
     private String authProvider;
     private boolean isBanned;
