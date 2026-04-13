@@ -16,4 +16,5 @@ public class Post {
     private int realEstateId;
 
     private List<Photo> photos;
+    private List<Review> reviews;
 }
