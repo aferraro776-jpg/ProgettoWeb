@@ -5,6 +5,7 @@ import it.unical.progettoweb.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -22,12 +23,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtUtil jwtUtil;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
+    public void onAuthenticationSuccess(@NonNull HttpServletRequest request,
+                                        @NonNull HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
         OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
 
+        assert oidcUser != null;
         String email   = oidcUser.getEmail()      != null ? oidcUser.getEmail()      : "";
         String name    = oidcUser.getGivenName()   != null ? oidcUser.getGivenName()   : "";
         String surname = oidcUser.getFamilyName()  != null ? oidcUser.getFamilyName()  : "";
