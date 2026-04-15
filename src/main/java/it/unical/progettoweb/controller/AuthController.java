@@ -6,7 +6,6 @@ import it.unical.progettoweb.dao.impl.UserDao;
 import it.unical.progettoweb.dto.SellerDto;
 import it.unical.progettoweb.dto.UserDto;
 import it.unical.progettoweb.model.Admin;
-import it.unical.progettoweb.model.Person;
 import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.model.User;
 import it.unical.progettoweb.service.JwtUtil;
