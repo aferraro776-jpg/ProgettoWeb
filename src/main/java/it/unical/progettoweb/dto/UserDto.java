@@ -1,18 +1,20 @@
 package it.unical.progettoweb.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
 public class UserDto {
 
-    // Campi da Person (senza password: non va mai esposta)
     private int id;
     private String name;
     private String surname;
     private String email;
-
-    // Campi specifici di User
     private Date birthDate;
     private String authProvider;
+
+    //la passwoed entra dal frontend ma non viene mai restituita nelle risposte json
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
 
     public UserDto() {}
 
@@ -43,4 +45,7 @@ public class UserDto {
 
     public String getAuthProvider() { return authProvider; }
     public void setAuthProvider(String authProvider) { this.authProvider = authProvider; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }
