@@ -1,0 +1,106 @@
+package it.unical.progettoweb.dao.impl;
+
+import it.unical.progettoweb.dao.SearchDao;
+import it.unical.progettoweb.dto.PostSummaryDto;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+public class SearchDaoImpl implements SearchDao {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public SearchDaoImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private final RowMapper<PostSummaryDto> dtoRowMapper = (rs, rowNum) -> {
+        PostSummaryDto dto = new PostSummaryDto();
+        dto.setPostId(rs.getInt("postId"));
+        dto.setTitle(rs.getString("title"));
+        dto.setDescription(rs.getString("description"));
+        dto.setCurrentPrice(rs.getDouble("currentPrice"));
+        dto.setPreviousPrice(rs.getDouble("previousPrice"));
+        dto.setTransactionType(rs.getString("transactionType"));
+        dto.setAuction(rs.getBoolean("isAuction"));
+        dto.setRealEstateId(rs.getInt("realEstateId"));
+        dto.setRealEstateType(rs.getString("realEstateType"));
+        dto.setSquareMeters(rs.getDouble("squareMeters"));
+        dto.setCity(rs.getString("city"));
+        dto.setAddress(rs.getString("address"));
+        return dto;
+    };
+
+    @Override
+    public List<PostSummaryDto> search(
+            String transactionType,
+            String realEstateType,
+            String city,
+            Double minPrice,
+            Double maxPrice,
+            String sortBy,
+            String sortDir) {
+
+        StringBuilder sql = new StringBuilder("""
+                SELECT
+                    p.id                    AS "postId",
+                    p.title                 AS "title",
+                    p.description           AS "description",
+                    p.currentprice          AS "currentPrice",
+                    p.previousprice         AS "previousPrice",
+                    p."transactionType"     AS "transactionType",
+                    p."isAuction"           AS "isAuction",
+                    r.id                    AS "realEstateId",
+                    r.type                  AS "realEstateType",
+                    r.squaremeters          AS "squareMeters",
+                    r.city                  AS "city",
+                    r.address               AS "address"
+                FROM posts p
+                JOIN "realEstate" r ON p.idrealestate = r.id
+                WHERE 1=1
+                """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (transactionType != null && !transactionType.isBlank()) {
+            sql.append("AND p.\"transactionType\" = ? ");
+            params.add(transactionType.toUpperCase());
+        }
+
+        if (realEstateType != null && !realEstateType.isBlank()) {
+            sql.append("AND UPPER(r.type) = ? ");
+            params.add(realEstateType.toUpperCase());
+        }
+
+        if (city != null && !city.isBlank()) {
+            sql.append("AND UPPER(r.city) LIKE ? ");
+            params.add("%" + city.toUpperCase() + "%");
+        }
+
+        if (minPrice != null) {
+            sql.append("AND p.currentprice >= ? ");
+            params.add(minPrice);
+        }
+
+        if (maxPrice != null) {
+            sql.append("AND p.currentprice <= ? ");
+            params.add(maxPrice);
+        }
+
+        String orderColumn = switch (sortBy != null ? sortBy.toLowerCase() : "") {
+            case "squaremeters" -> "r.squaremeters";
+            case "city"         -> "r.city";
+            case "title"        -> "p.title";
+            default             -> "p.currentprice";
+        };
+
+        String direction = "desc".equalsIgnoreCase(sortDir) ? "DESC" : "ASC";
+        sql.append("ORDER BY ").append(orderColumn).append(" ").append(direction);
+
+        return jdbcTemplate.query(sql.toString(), dtoRowMapper, params.toArray());
+    }
+}
