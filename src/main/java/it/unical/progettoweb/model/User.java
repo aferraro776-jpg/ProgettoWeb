@@ -14,5 +14,5 @@ import java.util.Date;
 public class User extends Person {
     private Date birthDate;
     private String authProvider;
-    private Boolean banned = false;  // ← Boolean maiuscolo, nome "banned" senza "is"
+    private boolean isBanned = false;  // ← Boolean maiuscolo, nome "banned" senza "is"
 }
