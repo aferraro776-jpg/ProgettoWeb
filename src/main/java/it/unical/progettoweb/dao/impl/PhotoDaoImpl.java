@@ -1,8 +1,12 @@
 package it.unical.progettoweb.dao.impl;
 
 import it.unical.progettoweb.dao.Dao;
+import it.unical.progettoweb.dao.PhotoDao;
+import it.unical.progettoweb.dao.PostDao;
 import it.unical.progettoweb.mapper.PhotoRowMapper;
 import it.unical.progettoweb.model.Photo;
+import it.unical.progettoweb.proxy.PhotoCollection;
+import it.unical.progettoweb.proxy.PhotoList;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class PhotoDaoImpl implements Dao<Photo, Integer> {
+public class PhotoDaoImpl implements PhotoDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Photo> rowMapper;
@@ -76,5 +80,17 @@ public class PhotoDaoImpl implements Dao<Photo, Integer> {
                 "SELECT * FROM photos WHERE postId = ? ORDER BY id",
                 rowMapper, postId
         );
+    }
+    @Override
+    public List<Photo> findByPostId(int postId) {
+        String sql = "SELECT id, url, postId FROM photo WHERE postId = ?";
+        return jdbcTemplate.query(sql, rowMapper, postId);
+    }
+
+    @Override
+    public PhotoCollection getPhotoCollectionForPost(int postId) {
+        String sql = "SELECT id, url, postId FROM photo WHERE postId = ?";
+        List<Photo> photos = jdbcTemplate.query(sql, rowMapper, postId);
+        return new PhotoList(photos);
     }
 }
