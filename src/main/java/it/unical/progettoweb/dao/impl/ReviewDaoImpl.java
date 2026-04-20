@@ -23,7 +23,7 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     @Override
-    public void save(Review review) {
+    public Review save(Review review) {
         jdbcTemplate.update(
                 "INSERT INTO reviews (id, title, description, rating, date, \"idUser\", \"idRealEstate\") " +
                         "VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?)",
@@ -34,6 +34,7 @@ public class ReviewDaoImpl implements ReviewDao {
                 review.getUserId(),
                 review.getRealEstateId()
         );
+        return review;
     }
 
     @Override

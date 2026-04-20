@@ -31,7 +31,7 @@ public class BuildingLotDao implements RealEstateDao<BuildingLot> {
     }
 
     @Override
-    public void save(BuildingLot b) {
+    public BuildingLot save(BuildingLot b) {
         jdbcTemplate.update(
                 "INSERT INTO \"realEstate\" (id, title, description, \"squareMetres\", latit, longit, address, \"createdAt\", type, cubature, \"landUse\") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'BUILDING_LOT', ?, ?)",
@@ -39,6 +39,7 @@ public class BuildingLotDao implements RealEstateDao<BuildingLot> {
                 b.getLatit(), b.getLongit(), b.getAddress(),
                 b.getCubature(), b.getPlannedUse()
         );
+        return b;
     }
 
     @Override

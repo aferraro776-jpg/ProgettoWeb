@@ -30,7 +30,7 @@ public class NonBuildingLotDao implements RealEstateDao<NonBuildingLot> {
     }
 
     @Override
-    public void save(NonBuildingLot n) {
+    public NonBuildingLot save(NonBuildingLot n) {
         jdbcTemplate.update(
                 "INSERT INTO \"realEstate\" (id, title, description, \"squareMetres\", latit, longit, address, \"createdAt\", type, \"cropType\") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'NON_BUILDING_LOT', ?)",
@@ -38,6 +38,7 @@ public class NonBuildingLotDao implements RealEstateDao<NonBuildingLot> {
                 n.getLatit(), n.getLongit(), n.getAddress(),
                 n.getCropType()
         );
+        return n;
     }
 
     @Override

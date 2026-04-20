@@ -32,7 +32,7 @@ public class ApartmentDao implements RealEstateDao<Apartment> {
     }
 
     @Override
-    public void save(Apartment a) {
+    public Apartment save(Apartment a) {
         jdbcTemplate.update(
                 "INSERT INTO \"realEstate\" (id, title, description, \"squareMetres\", latit, longit, address, \"createdAt\", type, \"numberOfRooms\", floor, \"hasElevator\") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'APARTMENT', ?, ?, ?)",
@@ -40,6 +40,7 @@ public class ApartmentDao implements RealEstateDao<Apartment> {
                 a.getLatit(), a.getLongit(), a.getAddress(),
                 a.getNumberOfRooms(), a.getFloor(), a.getHasElevator()
         );
+        return a;
     }
 
     @Override

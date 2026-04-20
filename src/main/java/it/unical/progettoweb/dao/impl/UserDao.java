@@ -23,7 +23,7 @@ public class UserDao implements PersonDao<User> {
     }
 
     @Override
-    public void save(User user) {
+    public User save(User user) {
         jdbc.update(
                 "INSERT INTO users (id, name, surname, password, email, birthdate, auth_provider, \"isBanned\") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -36,6 +36,7 @@ public class UserDao implements PersonDao<User> {
                 user.getAuthProvider(),
                 user.isBanned()
         );
+        return user;
     }
 
     @Override

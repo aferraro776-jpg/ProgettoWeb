@@ -32,7 +32,7 @@ public class GarageDao implements RealEstateDao<Garage> {
     }
 
     @Override
-    public void save(Garage g) {
+    public Garage save(Garage g) {
         jdbcTemplate.update(
                 "INSERT INTO \"realEstate\" (id, title, description, \"squareMetres\", latit, longit, address, \"createdAt\", type, width, height, \"isElectric\") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'GARAGE', ?, ?, ?)",
@@ -40,6 +40,7 @@ public class GarageDao implements RealEstateDao<Garage> {
                 g.getLatit(), g.getLongit(), g.getAddress(),
                 g.getWidth(), g.getHeight(), g.getIsElectric()
         );
+        return g;
     }
 
     @Override

@@ -23,7 +23,7 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public void save(Post post) {
+    public Post save(Post post) {
         jdbcTemplate.update(
                 "INSERT INTO posts (id, title, description, \"previousPrice\", \"currentPrice\", \"createdAt\", \"idSeller\", \"idRealEstate\") " +
                         "VALUES (?, ?, ?, ?, ?, NOW(), ?, ?)",
@@ -35,6 +35,7 @@ public class PostDaoImpl implements PostDao {
                 post.getSellerId(),
                 post.getRealEstateId()
         );
+        return post;
     }
 
     @Override

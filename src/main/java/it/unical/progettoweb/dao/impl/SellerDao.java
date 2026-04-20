@@ -23,7 +23,7 @@ public class SellerDao implements PersonDao<Seller> {
     }
 
     @Override
-    public void save(Seller seller) {
+    public Seller save(Seller seller) {
         jdbcTemplate.update(
                 "INSERT INTO sellers (id, vatnumber, name, surname, email, birthdate, password, \"isBanned\") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -36,6 +36,7 @@ public class SellerDao implements PersonDao<Seller> {
                 seller.getPassword(),
                 seller.isBanned()
         );
+        return seller;
     }
 
     @Override

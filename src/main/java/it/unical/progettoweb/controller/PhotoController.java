@@ -1,5 +1,6 @@
 package it.unical.progettoweb.controller;
 
+import it.unical.progettoweb.dao.PhotoDao;
 import it.unical.progettoweb.dao.impl.PhotoDaoImpl;
 import it.unical.progettoweb.model.Photo;
 import it.unical.progettoweb.proxy.PhotoCollection;
@@ -15,11 +16,11 @@ import java.util.List;
 @RequestMapping("/api/photos")
 public class PhotoController {
 
-    private final PhotoDaoImpl photoDao;
+    private final PhotoDao photoDao;
     private final CloudflareR2Service r2Service;
 
     public PhotoController(PhotoDaoImpl photoDao, CloudflareR2Service r2Service) {
-        this.photoDao = photoDao;
+        this.photoDao = (PhotoDao) photoDao;
         this.r2Service = r2Service;
     }
 

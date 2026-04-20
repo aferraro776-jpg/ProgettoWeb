@@ -33,7 +33,7 @@ public class VillaDao implements RealEstateDao<Villa> {
     }
 
     @Override
-    public void save(Villa v) {
+    public Villa save(Villa v) {
         jdbcTemplate.update(
                 "INSERT INTO \"realEstate\" (id, title, description, \"squareMetres\", latit, longit, address, \"createdAt\", type, \"numberOfRooms\", \"hasGarden\", \"hasPool\", \"numberOfFloors\") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'VILLA', ?, ?, ?, ?)",
@@ -41,6 +41,7 @@ public class VillaDao implements RealEstateDao<Villa> {
                 v.getLatit(), v.getLongit(), v.getAddress(),
                 v.getNumberOfRooms(), v.getHasGarden(), v.getHasPool(), v.getNumberOfFloors()
         );
+        return v;
     }
 
     @Override

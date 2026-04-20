@@ -23,7 +23,7 @@ public class AdminDao implements PersonDao<Admin> {
     }
 
     @Override
-    public void save(Admin admin) {
+    public Admin save(Admin admin) {
         jdbcTemplate.update(
                 "INSERT INTO admins (id, name, surname, email, password) VALUES (?, ?, ?, ?, ?)",
                 admin.getId(),
@@ -32,6 +32,7 @@ public class AdminDao implements PersonDao<Admin> {
                 admin.getEmail(),
                 admin.getPassword()
         );
+        return admin;
     }
 
     @Override
