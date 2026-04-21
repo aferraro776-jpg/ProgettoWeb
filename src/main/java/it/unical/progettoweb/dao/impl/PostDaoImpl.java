@@ -55,7 +55,7 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public void update(Post post) {
+    public Post update(Post post) {
         jdbcTemplate.update(
                 "UPDATE posts SET title=?, description=?, \"previousPrice\"=?, \"currentPrice\"=?, \"idSeller\"=?, \"idRealEstate\"=? WHERE id=?",
                 post.getTitle(),
@@ -66,6 +66,7 @@ public class PostDaoImpl implements PostDao {
                 post.getRealEstateId(),
                 post.getId()
         );
+        return post;
     }
 
     @Override

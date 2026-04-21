@@ -7,10 +7,13 @@ import it.unical.progettoweb.model.Post;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostService {
-    private PostDao postDao;
+    private final PostDao postDao;
 
     public PostService(PostDao postDao) {
         this.postDao = postDao;
@@ -46,9 +49,101 @@ public class PostService {
         Post saved = postDao.save(existing);
         return toDto(saved);
     }
+
     private PostDto toDto(Post post) {
         return new PostDto(post.getId(), post.getTitle(), post.getDescription(), post.getPreviousPrice(),
                 post.getCurrentPrice(), post.getCreatedAt(), post.getSellerId(), post.getRealEstateId());
     }
 
+    public PostDto update(int id, PostCreateDto postDto) {
+        Optional<Post> existing = postDao.get(id);
+
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Post non trovato");
+        }
+
+        Post post = existing.get();
+
+        post.setTitle(postDto.getTitle());
+        post.setDescription(postDto.getDescription());
+        post.setCurrentPrice(postDto.getCurrentPrice());
+        post.setPhotos(postDto.getPhotoUrls());
+        post.setRealEstateId(postDto.getRealEstateId());
+
+        Post saved = postDao.update(post);
+        return toDto(saved);
+    }
+
+    public void delete(int id) {
+        Optional<Post> existing = postDao.get(id);
+
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Post non trovato");
+        }
+
+        postDao.delete(id);
+    }
+
+    public List<PostDto> getAll(String sortBy, String direction) {
+        List<Post> posts = postDao.getAll();
+        if (sortBy != null && sortBy.equalsIgnoreCase("price")) {
+            for (int i = 0; i < posts.size() - 1; i++) {
+                for (int j = 0; j < posts.size() - i - 1; j++) {
+                    Post a = posts.get(j);
+                    Post b = posts.get(j + 1);
+
+                    boolean scambia = "desc".equalsIgnoreCase(direction)
+                            ? a.getCurrentPrice() < b.getCurrentPrice()
+                            : a.getCurrentPrice() > b.getCurrentPrice();
+                    if (scambia) {
+                        posts.set(j, b);
+                        posts.set(j + 1, a);
+                    }
+                }
+            }
+        }
+        List<PostDto> result = new ArrayList<>();
+        for (Post p : posts) {
+            result.add(toDto(p));
+        }
+        return result;
+    }
+
+    public PostDto getById(int id) {
+        Optional<Post> existing = postDao.get(id);
+
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Post non trovato");
+        }
+
+        return toDto(existing.get());
+    }
+
+    public List<PostDto> getBySellerId(int sellerId) {
+        List<Post> posts = postDao.findBySellerId(sellerId);
+
+        if (posts == null || posts.isEmpty()) {
+            throw new RuntimeException("Nessun post trovato per il venditore con id: " + sellerId);
+        }
+
+        List<PostDto> result = new ArrayList<>();
+        for (Post p : posts) {
+            result.add(toDto(p));
+        }
+        return result;
+    }
+
+    public List<PostDto> getByRealEstateId(int realEstateId) {
+        List<Post> posts = postDao.findByRealEstateId(realEstateId);
+
+        if (posts == null || posts.isEmpty()) {
+            throw new RuntimeException("Nessun post trovato per l'immobile con id: " + realEstateId);
+        }
+
+        List<PostDto> result = new ArrayList<>();
+        for (Post p : posts) {
+            result.add(toDto(p));
+        }
+        return result;
+    }
 }

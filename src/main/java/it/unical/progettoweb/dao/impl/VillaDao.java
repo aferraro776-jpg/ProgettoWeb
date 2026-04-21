@@ -61,13 +61,14 @@ public class VillaDao implements RealEstateDao<Villa> {
     }
 
     @Override
-    public void update(Villa v) {
+    public Villa update(Villa v) {
         jdbcTemplate.update(
                 "UPDATE \"realEstate\" SET title=?, description=?, \"squareMetres\"=?, latit=?, longit=?, address=?, \"numberOfRooms\"=?, \"hasGarden\"=?, \"hasPool\"=?, \"numberOfFloors\"=? WHERE id=?",
                 v.getTitle(), v.getDescription(), v.getSquareMetres(),
                 v.getLatit(), v.getLongit(), v.getAddress(),
                 v.getNumberOfRooms(), v.getHasGarden(), v.getHasPool(), v.getNumberOfFloors(), v.getId()
         );
+        return v;
     }
 
     @Override

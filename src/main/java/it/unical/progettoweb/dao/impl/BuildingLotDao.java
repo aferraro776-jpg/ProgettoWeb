@@ -59,13 +59,14 @@ public class BuildingLotDao implements RealEstateDao<BuildingLot> {
     }
 
     @Override
-    public void update(BuildingLot b) {
+    public BuildingLot update(BuildingLot b) {
         jdbcTemplate.update(
                 "UPDATE \"realEstate\" SET title=?, description=?, \"squareMetres\"=?, latit=?, longit=?, address=?, cubature=?, \"landUse\"=? WHERE id=?",
                 b.getTitle(), b.getDescription(), b.getSquareMetres(),
                 b.getLatit(), b.getLongit(), b.getAddress(),
                 b.getCubature(), b.getPlannedUse(), b.getId()
         );
+        return b;
     }
 
     @Override

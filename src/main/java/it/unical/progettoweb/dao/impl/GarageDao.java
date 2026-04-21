@@ -60,13 +60,14 @@ public class GarageDao implements RealEstateDao<Garage> {
     }
 
     @Override
-    public void update(Garage g) {
+    public Garage update(Garage g) {
         jdbcTemplate.update(
                 "UPDATE \"realEstate\" SET title=?, description=?, \"squareMetres\"=?, latit=?, longit=?, address=?, width=?, height=?, \"isElectric\"=? WHERE id=?",
                 g.getTitle(), g.getDescription(), g.getSquareMetres(),
                 g.getLatit(), g.getLongit(), g.getAddress(),
                 g.getWidth(), g.getHeight(), g.getIsElectric(), g.getId()
         );
+        return g;
     }
 
     @Override

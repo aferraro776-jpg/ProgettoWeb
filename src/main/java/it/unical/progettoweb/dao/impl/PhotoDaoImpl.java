@@ -59,13 +59,14 @@ public class PhotoDaoImpl implements PhotoDao {
     }
 
     @Override
-    public void update(Photo photo) {
+    public Photo update(Photo photo) {
         jdbcTemplate.update(
                 "UPDATE photos SET url=?, postId=? WHERE id=?",
                 photo.getUrl(),
                 photo.getPostId(),
                 photo.getId()
         );
+        return photo;
     }
 
     @Override

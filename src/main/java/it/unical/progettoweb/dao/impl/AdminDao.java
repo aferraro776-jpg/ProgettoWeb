@@ -57,7 +57,7 @@ public class AdminDao implements PersonDao<Admin> {
     }
 
     @Override
-    public void update(Admin admin) {
+    public Admin update(Admin admin) {
         jdbcTemplate.update(
                 "UPDATE admins SET name=?, surname=?, email=?, password=? WHERE id=?",
                 admin.getName(),
@@ -66,6 +66,7 @@ public class AdminDao implements PersonDao<Admin> {
                 admin.getPassword(),
                 admin.getId()
         );
+        return admin;
     }
 
     @Override

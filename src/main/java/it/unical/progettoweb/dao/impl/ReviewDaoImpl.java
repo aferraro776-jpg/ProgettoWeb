@@ -54,7 +54,7 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     @Override
-    public void update(Review review) {
+    public Review update(Review review) {
         jdbcTemplate.update(
                 "UPDATE reviews SET title=?, description=?, rating=?, \"idUser\"=?, \"idRealEstate\"=? WHERE id=?",
                 review.getTitle(),
@@ -64,6 +64,7 @@ public class ReviewDaoImpl implements ReviewDao {
                 review.getRealEstateId(),
                 review.getId()
         );
+        return review;
     }
 
     @Override

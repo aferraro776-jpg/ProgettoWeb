@@ -58,13 +58,14 @@ public class NonBuildingLotDao implements RealEstateDao<NonBuildingLot> {
     }
 
     @Override
-    public void update(NonBuildingLot n) {
+    public NonBuildingLot update(NonBuildingLot n) {
         jdbcTemplate.update(
                 "UPDATE \"realEstate\" SET title=?, description=?, \"squareMetres\"=?, latit=?, longit=?, address=?, \"cropType\"=? WHERE id=?",
                 n.getTitle(), n.getDescription(), n.getSquareMetres(),
                 n.getLatit(), n.getLongit(), n.getAddress(),
                 n.getCropType(), n.getId()
         );
+        return n;
     }
 
     @Override

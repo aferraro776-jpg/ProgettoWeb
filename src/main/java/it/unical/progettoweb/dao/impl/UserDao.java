@@ -56,7 +56,7 @@ public class UserDao implements PersonDao<User> {
     }
 
     @Override
-    public void update(User user) {
+    public User update(User user) {
         jdbc.update(
                 "UPDATE users SET name=?, surname=?, password=?, email=?, birthdate=?, auth_provider=?, \"isBanned\"=? WHERE id=?",
                 user.getName(),
@@ -68,6 +68,7 @@ public class UserDao implements PersonDao<User> {
                 user.isBanned(),
                 user.getId()
         );
+        return user;
     }
 
     @Override

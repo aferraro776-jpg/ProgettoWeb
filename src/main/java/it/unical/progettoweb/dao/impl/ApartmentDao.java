@@ -60,13 +60,14 @@ public class ApartmentDao implements RealEstateDao<Apartment> {
     }
 
     @Override
-    public void update(Apartment a) {
+    public Apartment update(Apartment a) {
         jdbcTemplate.update(
                 "UPDATE \"realEstate\" SET title=?, description=?, \"squareMetres\"=?, latit=?, longit=?, address=?, \"numberOfRooms\"=?, floor=?, \"hasElevator\"=? WHERE id=?",
                 a.getTitle(), a.getDescription(), a.getSquareMetres(),
                 a.getLatit(), a.getLongit(), a.getAddress(),
                 a.getNumberOfRooms(), a.getFloor(), a.getHasElevator(), a.getId()
         );
+        return a;
     }
 
     @Override
