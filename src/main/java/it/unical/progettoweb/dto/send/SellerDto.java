@@ -1,4 +1,4 @@
-package it.unical.progettoweb.dto;
+package it.unical.progettoweb.dto.send;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;

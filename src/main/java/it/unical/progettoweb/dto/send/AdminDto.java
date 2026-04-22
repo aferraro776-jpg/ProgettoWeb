@@ -1,16 +1,15 @@
-package it.unical.progettoweb.dto;
+package it.unical.progettoweb.dto.send;
 
-public class PersonDto {
+public class AdminDto {
 
     private int id;
     private String name;
     private String surname;
     private String email;
-    // non c'è la password, nel dto è rischioso
 
-    public PersonDto() {}
+    public AdminDto() {}
 
-    public PersonDto(int id, String name, String surname, String email) {
+    public AdminDto(int id, String name, String surname, String email) {
         this.id = id;
         this.name = name;
         this.surname = surname;

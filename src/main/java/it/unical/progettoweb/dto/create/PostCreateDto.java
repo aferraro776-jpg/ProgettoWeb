@@ -1,4 +1,4 @@
-package it.unical.progettoweb.dto;
+package it.unical.progettoweb.dto.create;
 
 import it.unical.progettoweb.model.Photo;
 import lombok.Data;

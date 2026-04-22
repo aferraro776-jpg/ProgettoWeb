@@ -1,8 +1,8 @@
-package it.unical.progettoweb.dto;
+package it.unical.progettoweb.dto.send;
 
 import java.time.LocalDateTime;
 
-public class NonBuildingLotDto {
+public class GarageDto {
 
     // Campi ereditati da RealEstate
     private int id;
@@ -16,15 +16,17 @@ public class NonBuildingLotDto {
     private LocalDateTime createdAt;
     private String type;
 
-    // Campi specifici di NonBuildingLot
-    private String cropType;
+    // Campi specifici di Garage
+    private Double width;
+    private Double height;
+    private Boolean isElectric;
 
-    public NonBuildingLotDto() {}
+    public GarageDto() {}
 
-    public NonBuildingLotDto(int id, String title, int numberOfRooms, String description,
-                             double squareMetres, double latit, double longit,
-                             String address, LocalDateTime createdAt, String type,
-                             String cropType) {
+    public GarageDto(int id, String title, int numberOfRooms, String description,
+                     double squareMetres, double latit, double longit,
+                     String address, LocalDateTime createdAt, String type,
+                     Double width, Double height, Boolean isElectric) {
         this.id = id;
         this.title = title;
         this.numberOfRooms = numberOfRooms;
@@ -35,7 +37,9 @@ public class NonBuildingLotDto {
         this.address = address;
         this.createdAt = createdAt;
         this.type = type;
-        this.cropType = cropType;
+        this.width = width;
+        this.height = height;
+        this.isElectric = isElectric;
     }
 
     public int getId() { return id; }
@@ -68,6 +72,12 @@ public class NonBuildingLotDto {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public String getCropType() { return cropType; }
-    public void setCropType(String cropType) { this.cropType = cropType; }
+    public Double getWidth() { return width; }
+    public void setWidth(Double width) { this.width = width; }
+
+    public Double getHeight() { return height; }
+    public void setHeight(Double height) { this.height = height; }
+
+    public Boolean getIsElectric() { return isElectric; }
+    public void setIsElectric(Boolean isElectric) { this.isElectric = isElectric; }
 }
