@@ -1,4 +1,4 @@
-package it.unical.progettoweb.dto;
+package it.unical.progettoweb.dto.send;
 
 import java.util.Date;
 

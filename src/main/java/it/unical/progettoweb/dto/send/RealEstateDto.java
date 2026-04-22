@@ -1,11 +1,9 @@
-package it.unical.progettoweb.dto;
+package it.unical.progettoweb.dto.send;
 
 import java.time.LocalDateTime;
 
-// Classe piatta: contiene sia i campi di RealEstate che quelli specifici di Villa
-public class VillaDto {
+public class RealEstateDto {
 
-    // Campi ereditati da RealEstate
     private int id;
     private String title;
     private int numberOfRooms;
@@ -17,17 +15,11 @@ public class VillaDto {
     private LocalDateTime createdAt;
     private String type;
 
-    // Campi specifici di Villa
-    private Boolean hasGarden;
-    private Boolean hasPool;
-    private Integer numberOfFloors;
+    public RealEstateDto() {}
 
-    public VillaDto() {}
-
-    public VillaDto(int id, String title, int numberOfRooms, String description,
-                    double squareMetres, double latit, double longit,
-                    String address, LocalDateTime createdAt, String type,
-                    Boolean hasGarden, Boolean hasPool, Integer numberOfFloors) {
+    public RealEstateDto(int id, String title, int numberOfRooms, String description,
+                         double squareMetres, double latit, double longit,
+                         String address, LocalDateTime createdAt, String type) {
         this.id = id;
         this.title = title;
         this.numberOfRooms = numberOfRooms;
@@ -38,9 +30,6 @@ public class VillaDto {
         this.address = address;
         this.createdAt = createdAt;
         this.type = type;
-        this.hasGarden = hasGarden;
-        this.hasPool = hasPool;
-        this.numberOfFloors = numberOfFloors;
     }
 
     public int getId() { return id; }
@@ -72,13 +61,4 @@ public class VillaDto {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-
-    public Boolean getHasGarden() { return hasGarden; }
-    public void setHasGarden(Boolean hasGarden) { this.hasGarden = hasGarden; }
-
-    public Boolean getHasPool() { return hasPool; }
-    public void setHasPool(Boolean hasPool) { this.hasPool = hasPool; }
-
-    public Integer getNumberOfFloors() { return numberOfFloors; }
-    public void setNumberOfFloors(Integer numberOfFloors) { this.numberOfFloors = numberOfFloors; }
 }

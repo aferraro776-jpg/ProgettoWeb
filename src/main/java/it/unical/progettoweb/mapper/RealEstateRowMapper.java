@@ -13,18 +13,14 @@ public class RealEstateRowMapper implements RowMapper<RealEstate> {
     @Override
     public RealEstate mapRow(ResultSet rs, int rowNum) throws SQLException {
         String type = rs.getString("type");
-
-        RealEstate realEstate = switch (type) {
-            case "APARTMENT"           -> mapApartment(rs);
-            case "VILLA"               -> mapVilla(rs);
-            case "GARAGE"              -> mapGarage(rs);
-            case "BUILDING_LOT"        -> mapBuildingLot(rs);
-            case "NON_BUILDING_LOT"    -> mapNonBuildingLot(rs);
+        return switch (type) {
+            case "APARTMENT"        -> mapApartment(rs);
+            case "VILLA"            -> mapVilla(rs);
+            case "GARAGE"           -> mapGarage(rs);
+            case "BUILDING_LOT"     -> mapBuildingLot(rs);
+            case "NON_BUILDING_LOT" -> mapNonBuildingLot(rs);
             default -> throw new IllegalArgumentException("Unknown type: " + type);
         };
-
-        mapCommon(realEstate, rs);
-        return realEstate;
     }
 
     public void mapCommon(RealEstate r, ResultSet rs) throws SQLException {
@@ -37,11 +33,12 @@ public class RealEstateRowMapper implements RowMapper<RealEstate> {
         r.setAddress(rs.getString("address"));
         r.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         r.setType(rs.getString("type"));
+        r.setNumberOfRooms(rs.getInt("number_of_rooms"));
     }
 
     private Apartment mapApartment(ResultSet rs) throws SQLException {
         Apartment a = new Apartment();
-        a.setNumberOfRooms(rs.getInt("number_of_rooms"));
+        mapCommon(a, rs);
         a.setFloor(rs.getInt("floor"));
         a.setHasElevator(rs.getBoolean("has_elevator"));
         return a;
@@ -49,7 +46,7 @@ public class RealEstateRowMapper implements RowMapper<RealEstate> {
 
     private Villa mapVilla(ResultSet rs) throws SQLException {
         Villa v = new Villa();
-        v.setNumberOfRooms(rs.getInt("number_of_rooms"));
+        mapCommon(v, rs);
         v.setHasGarden(rs.getBoolean("has_garden"));
         v.setHasPool(rs.getBoolean("has_pool"));
         v.setNumberOfFloors(rs.getInt("number_of_floors"));
@@ -58,6 +55,7 @@ public class RealEstateRowMapper implements RowMapper<RealEstate> {
 
     private Garage mapGarage(ResultSet rs) throws SQLException {
         Garage g = new Garage();
+        mapCommon(g, rs);
         g.setWidth(rs.getDouble("width"));
         g.setHeight(rs.getDouble("height"));
         g.setIsElectric(rs.getBoolean("is_electric"));
@@ -66,6 +64,7 @@ public class RealEstateRowMapper implements RowMapper<RealEstate> {
 
     private BuildingLot mapBuildingLot(ResultSet rs) throws SQLException {
         BuildingLot b = new BuildingLot();
+        mapCommon(b, rs);
         b.setCubature(rs.getDouble("cubature"));
         b.setPlannedUse(rs.getString("land_use"));
         return b;
@@ -73,6 +72,7 @@ public class RealEstateRowMapper implements RowMapper<RealEstate> {
 
     private NonBuildingLot mapNonBuildingLot(ResultSet rs) throws SQLException {
         NonBuildingLot n = new NonBuildingLot();
+        mapCommon(n, rs);
         n.setCropType(rs.getString("crop_type"));
         return n;
     }
