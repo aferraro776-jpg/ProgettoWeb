@@ -40,21 +40,39 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // ← CHIAVE: IF_REQUIRED permette la sessione durante il flusso OAuth2
+                // dopo il login il client usa il JWT, quindi di fatto resta stateless
                 .sessionManagement(sm ->
-                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login/**",
                                 "/oauth2/**",
                                 "/api/auth/**",
-                                "/register/**"
+                                "/register/**",
+                                "/error"           // ← aggiunto: evita redirect su pagine di errore
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+
+                // ← disabilita il redirect automatico a /login quando non autenticato
+                // per le API REST restituisce 401 invece di reindirizzare a Google
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String path = request.getRequestURI();
+                            if (path.startsWith("/api/")) {
+                                response.sendError(401, "Non autenticato");
+                            }
+                        })
+                )
+
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2SuccessHandler)
                 )
+
                 .addFilterBefore(
                         jwtAuthFilter(),
                         UsernamePasswordAuthenticationFilter.class

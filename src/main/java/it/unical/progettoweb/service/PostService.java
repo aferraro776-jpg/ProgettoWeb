@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class PostService {
@@ -29,6 +30,7 @@ public class PostService {
         post.setPreviousPrice(0);
         post.setSellerId(postDto.getSellerId());
         post.setRealEstateId(postDto.getRealEstateId());
+        post.setId(generateUniqueId());
         post = postDao.save(post);
         return toDto(post);
     }
@@ -145,5 +147,13 @@ public class PostService {
             result.add(toDto(p));
         }
         return result;
+    }
+    private int generateUniqueId() {
+        int id;
+        do {
+            Random random = new Random();
+            id = random.nextInt(89999) + 10000;
+        } while (postDao.get(id).isPresent());
+        return id;
     }
 }

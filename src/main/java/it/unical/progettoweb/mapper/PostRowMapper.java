@@ -16,11 +16,11 @@ public class PostRowMapper implements RowMapper<Post> {
         post.setId(rs.getInt("id"));
         post.setTitle(rs.getString("title"));
         post.setDescription(rs.getString("description"));
-        post.setPreviousPrice(rs.getDouble("previousPrice"));
-        post.setCurrentPrice(rs.getDouble("currentPrice"));
-        post.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
-        post.setSellerId(rs.getInt("idSeller"));
-        post.setRealEstateId(rs.getInt("idRealEstate"));
+        post.setPreviousPrice(rs.getDouble("previous_price"));
+        post.setCurrentPrice(rs.getDouble("current_price"));
+        post.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        post.setSellerId(rs.getInt("id_seller"));
+        post.setRealEstateId(rs.getInt("id_real_estate"));
         return post;
     }
 }

@@ -25,7 +25,7 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public Review save(Review review) {
         jdbcTemplate.update(
-                "INSERT INTO reviews (id, title, description, rating, date, \"idUser\", \"idRealEstate\") " +
+                "INSERT INTO reviews (id, title, description, rating, date, id_user, id_real_estate) " +
                         "VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?)",
                 review.getId(),
                 review.getTitle(),
@@ -56,7 +56,7 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public Review update(Review review) {
         jdbcTemplate.update(
-                "UPDATE reviews SET title=?, description=?, rating=?, \"idUser\"=?, \"idRealEstate\"=? WHERE id=?",
+                "UPDATE reviews SET title=?, description=?, rating=?, id_user=?, id_real_estate=? WHERE id=?",
                 review.getTitle(),
                 review.getDescription(),
                 review.getRating(),
@@ -75,7 +75,7 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public List<Review> findByRealEstateId(int realEstateId) {
         return jdbcTemplate.query(
-                "SELECT * FROM reviews WHERE \"idRealEstate\" = ? ORDER BY date DESC",
+                "SELECT * FROM reviews WHERE id_real_estate = ? ORDER BY date DESC",
                 rowMapper, realEstateId
         );
     }
@@ -83,7 +83,7 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public List<Review> findByUserId(int userId) {
         return jdbcTemplate.query(
-                "SELECT * FROM reviews WHERE \"idUser\" = ? ORDER BY date DESC",
+                "SELECT * FROM reviews WHERE id_user = ? ORDER BY date DESC",
                 rowMapper, userId
         );
     }
@@ -91,7 +91,7 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public Double getAverageRatingForRealEstate(int realEstateId) {
         Double avg = jdbcTemplate.queryForObject(
-                "SELECT AVG(rating) FROM reviews WHERE \"idRealEstate\" = ?",
+                "SELECT AVG(rating) FROM reviews WHERE id_real_estate = ?",
                 Double.class, realEstateId
         );
         return avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;

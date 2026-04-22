@@ -25,7 +25,7 @@ public class UserDao implements PersonDao<User> {
     @Override
     public User save(User user) {
         jdbc.update(
-                "INSERT INTO users (id, name, surname, password, email, birthdate, auth_provider, \"isBanned\") " +
+                "INSERT INTO users (id, name, surname, password, email, birthdate, auth_provider, is_banned) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 user.getId(),
                 user.getName(),
@@ -58,7 +58,7 @@ public class UserDao implements PersonDao<User> {
     @Override
     public User update(User user) {
         jdbc.update(
-                "UPDATE users SET name=?, surname=?, password=?, email=?, birthdate=?, auth_provider=?, \"isBanned\"=? WHERE id=?",
+                "UPDATE users SET name=?, surname=?, password=?, email=?, birthdate=?, auth_provider=?, is_banned=? WHERE id=?",
                 user.getName(),
                 user.getSurname(),
                 user.getPassword(),

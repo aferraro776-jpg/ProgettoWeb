@@ -4,11 +4,11 @@ CREATE TABLE public.reviews (
                                    description varchar(200) NOT NULL,
                                    rating int4 NOT NULL,
                                    "date" date DEFAULT CURRENT_DATE NOT NULL,
-                                   idUser int4 NULL,
-                                   idRealEstate int4 NULL,
+                                   id_user int4 NULL,
+                                   id_real_estate int4 NULL,
                                    CONSTRAINT reviews_id_check CHECK (((id >= 10000) AND (id <= 99999))),
                                    CONSTRAINT reviews_pkey PRIMARY KEY (id),
                                    CONSTRAINT reviews_valutazione_check CHECK (((rating >= 0) AND (rating <= 5))),
-                                   CONSTRAINT reviews_idRealEstate_fkey FOREIGN KEY (idRealEstate) REFERENCES public."realEstate"(id),
-                                   CONSTRAINT reviews_idUser_fkey FOREIGN KEY (idUser) REFERENCES public.users(id)
+                                   CONSTRAINT reviews_id_realEstate_fkey FOREIGN KEY (id_real_estate) REFERENCES public."real_estate"(id),
+                                   CONSTRAINT reviews_id_user_fkey FOREIGN KEY (id_user) REFERENCES public.users(id)
 );

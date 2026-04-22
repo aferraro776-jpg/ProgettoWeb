@@ -29,7 +29,7 @@ public class PhotoDaoImpl implements PhotoDao {
     @Override
     public Photo save(Photo photo) {
         jdbcTemplate.update(
-                "INSERT INTO photos (id, url, postId) VALUES (?, ?, ?)",
+                "INSERT INTO photos (id, url, post_id) VALUES (?, ?, ?)",
                 photo.getId(),
                 photo.getUrl(),
                 photo.getPostId()
@@ -61,7 +61,7 @@ public class PhotoDaoImpl implements PhotoDao {
     @Override
     public Photo update(Photo photo) {
         jdbcTemplate.update(
-                "UPDATE photos SET url=?, postId=? WHERE id=?",
+                "UPDATE photos SET url=?, post_id=? WHERE id=?",
                 photo.getUrl(),
                 photo.getPostId(),
                 photo.getId()
@@ -78,19 +78,19 @@ public class PhotoDaoImpl implements PhotoDao {
 
     public List<Photo> getByPostId(Integer postId) {
         return jdbcTemplate.query(
-                "SELECT * FROM photos WHERE postId = ? ORDER BY id",
+                "SELECT * FROM photos WHERE post_id = ? ORDER BY id",
                 rowMapper, postId
         );
     }
     @Override
     public List<Photo> findByPostId(int postId) {
-        String sql = "SELECT id, url, postId FROM photo WHERE postId = ?";
+        String sql = "SELECT id, url, post_id FROM photo WHERE post_id = ?";
         return jdbcTemplate.query(sql, rowMapper, postId);
     }
 
     @Override
     public PhotoCollection getPhotoCollectionForPost(int postId) {
-        String sql = "SELECT id, url, postId FROM photo WHERE postId = ?";
+        String sql = "SELECT id, url, post_id FROM photo WHERE post_id = ?";
         List<Photo> photos = jdbcTemplate.query(sql, rowMapper, postId);
         return new PhotoList(photos);
     }
