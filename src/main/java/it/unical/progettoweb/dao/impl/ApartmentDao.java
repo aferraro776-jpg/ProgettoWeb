@@ -32,21 +32,22 @@ public class ApartmentDao implements RealEstateDao<Apartment> {
     }
 
     @Override
-    public void save(Apartment a) {
+    public Apartment save(Apartment a) {
         jdbcTemplate.update(
-                "INSERT INTO \"realEstate\" (id, title, description, \"squareMetres\", latit, longit, address, \"createdAt\", type, \"numberOfRooms\", floor, \"hasElevator\") " +
+                "INSERT INTO realEstate (id, title, description, square_metres, latit, longit, address, created_at, type, number_of_rooms, floor, has_elevator) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'APARTMENT', ?, ?, ?)",
                 a.getId(), a.getTitle(), a.getDescription(), a.getSquareMetres(),
                 a.getLatit(), a.getLongit(), a.getAddress(),
                 a.getNumberOfRooms(), a.getFloor(), a.getHasElevator()
         );
+        return a;
     }
 
     @Override
     public Optional<Apartment> get(Integer id) {
         try {
             return Optional.ofNullable(
-                    jdbcTemplate.queryForObject("SELECT * FROM \"realEstate\" WHERE id=? AND type='APARTMENT'", rowMapper, id)
+                    jdbcTemplate.queryForObject("SELECT * FROM real_estate WHERE id=? AND type='APARTMENT'", rowMapper, id)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -55,38 +56,39 @@ public class ApartmentDao implements RealEstateDao<Apartment> {
 
     @Override
     public List<Apartment> getAll() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='APARTMENT' ORDER BY id", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='APARTMENT' ORDER BY id", rowMapper);
     }
 
     @Override
-    public void update(Apartment a) {
+    public Apartment update(Apartment a) {
         jdbcTemplate.update(
-                "UPDATE \"realEstate\" SET title=?, description=?, \"squareMetres\"=?, latit=?, longit=?, address=?, \"numberOfRooms\"=?, floor=?, \"hasElevator\"=? WHERE id=?",
+                "UPDATE real_estate SET title=?, description=?, square_metres=?, latit=?, longit=?, address=?, number_of_rooms=?, floor=?, has_elevator=? WHERE id=?",
                 a.getTitle(), a.getDescription(), a.getSquareMetres(),
                 a.getLatit(), a.getLongit(), a.getAddress(),
                 a.getNumberOfRooms(), a.getFloor(), a.getHasElevator(), a.getId()
         );
+        return a;
     }
 
     @Override
     public void delete(Integer id) {
-        jdbcTemplate.update("DELETE FROM \"realEstate\" WHERE id=?", id);
+        jdbcTemplate.update("DELETE FROM real_estate WHERE id=?", id);
     }
 
     @Override
     public List<Apartment> findAllOrderBySquareMetresAsc() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='APARTMENT' ORDER BY \"squareMetres\" ASC", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='APARTMENT' ORDER BY square_metres ASC", rowMapper);
     }
 
     @Override
     public List<Apartment> findAllOrderBySquareMetresDesc() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='APARTMENT' ORDER BY \"squareMetres\" DESC", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='APARTMENT' ORDER BY square_metres DESC", rowMapper);
     }
 
     @Override
     public List<Apartment> findAllOrderByPriceAsc() {
         return jdbcTemplate.query(
-                "SELECT r.* FROM \"realEstate\" r JOIN posts p ON p.\"idRealEstate\"=r.id WHERE r.type='APARTMENT' ORDER BY p.\"currentPrice\" ASC",
+                "SELECT r.* FROM real_estate r JOIN posts p ON p.id_real_estate=r.id WHERE r.type='APARTMENT' ORDER BY p.current_price ASC",
                 rowMapper
         );
     }
@@ -94,7 +96,7 @@ public class ApartmentDao implements RealEstateDao<Apartment> {
     @Override
     public List<Apartment> findAllOrderByPriceDesc() {
         return jdbcTemplate.query(
-                "SELECT r.* FROM \"realEstate\" r JOIN posts p ON p.\"idRealEstate\"=r.id WHERE r.type='APARTMENT' ORDER BY p.\"currentPrice\" DESC",
+                "SELECT r.* FROM real_estate r JOIN posts p ON p.id_real_estate=r.id WHERE r.type='APARTMENT' ORDER BY p.current_price DESC",
                 rowMapper
         );
     }

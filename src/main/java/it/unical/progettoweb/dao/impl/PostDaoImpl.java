@@ -23,9 +23,9 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public void save(Post post) {
+    public Post save(Post post) {
         jdbcTemplate.update(
-                "INSERT INTO posts (id, title, description, \"previousPrice\", \"currentPrice\", \"createdAt\", \"idSeller\", \"idRealEstate\") " +
+                "INSERT INTO posts (id, title, description, previous_price, current_price, created_at, id_seller, id_real_estate) " +
                         "VALUES (?, ?, ?, ?, ?, NOW(), ?, ?)",
                 post.getId(),
                 post.getTitle(),
@@ -35,6 +35,7 @@ public class PostDaoImpl implements PostDao {
                 post.getSellerId(),
                 post.getRealEstateId()
         );
+        return post;
     }
 
     @Override
@@ -50,13 +51,16 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public List<Post> getAll() {
-        return jdbcTemplate.query("SELECT * FROM posts ORDER BY \"createdAt\" DESC", rowMapper);
+        return jdbcTemplate.query(
+                "SELECT * FROM posts ORDER BY created_at DESC",
+                rowMapper
+        );
     }
 
     @Override
-    public void update(Post post) {
+    public Post update(Post post) {
         jdbcTemplate.update(
-                "UPDATE posts SET title=?, description=?, \"previousPrice\"=?, \"currentPrice\"=?, \"idSeller\"=?, \"idRealEstate\"=? WHERE id=?",
+                "UPDATE posts SET title=?, description=?, previous_price=?, current_price=?, id_seller=?, id_real_estate=? WHERE id=?",
                 post.getTitle(),
                 post.getDescription(),
                 post.getPreviousPrice(),
@@ -65,6 +69,7 @@ public class PostDaoImpl implements PostDao {
                 post.getRealEstateId(),
                 post.getId()
         );
+        return post;
     }
 
     @Override
@@ -75,7 +80,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public List<Post> findBySellerId(int sellerId) {
         return jdbcTemplate.query(
-                "SELECT * FROM posts WHERE \"idSeller\"=? ORDER BY \"createdAt\" DESC",
+                "SELECT * FROM posts WHERE id_seller=? ORDER BY created_at DESC",
                 rowMapper, sellerId
         );
     }
@@ -83,7 +88,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public List<Post> findByRealEstateId(int realEstateId) {
         return jdbcTemplate.query(
-                "SELECT * FROM posts WHERE \"idRealEstate\"=? ORDER BY \"createdAt\" DESC",
+                "SELECT * FROM posts WHERE id_real_estate=? ORDER BY created_at DESC",
                 rowMapper, realEstateId
         );
     }
@@ -91,7 +96,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public List<Post> findAllOrderByPriceAsc() {
         return jdbcTemplate.query(
-                "SELECT * FROM posts ORDER BY \"currentPrice\" ASC",
+                "SELECT * FROM posts ORDER BY current_price ASC",
                 rowMapper
         );
     }
@@ -99,7 +104,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public List<Post> findAllOrderByPriceDesc() {
         return jdbcTemplate.query(
-                "SELECT * FROM posts ORDER BY \"currentPrice\" DESC",
+                "SELECT * FROM posts ORDER BY current_price DESC",
                 rowMapper
         );
     }
@@ -107,7 +112,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public void reducePrice(int postId, double newPrice) {
         jdbcTemplate.update(
-                "UPDATE posts SET \"previousPrice\"=\"currentPrice\", \"currentPrice\"=? WHERE id=?",
+                "UPDATE posts SET previous_price=current_price, current_price=? WHERE id=?",
                 newPrice, postId
         );
     }

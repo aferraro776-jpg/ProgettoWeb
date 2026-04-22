@@ -23,9 +23,9 @@ public class SellerDao implements PersonDao<Seller> {
     }
 
     @Override
-    public void save(Seller seller) {
+    public Seller save(Seller seller) {
         jdbcTemplate.update(
-                "INSERT INTO sellers (id, vatnumber, name, surname, email, birthdate, password, \"isBanned\") " +
+                "INSERT INTO sellers (id, vatnumber, name, surname, email, birthdate, password, is_banned) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 seller.getId(),
                 seller.getVatNumber(),
@@ -36,6 +36,7 @@ public class SellerDao implements PersonDao<Seller> {
                 seller.getPassword(),
                 seller.isBanned()
         );
+        return seller;
     }
 
     @Override
@@ -60,9 +61,9 @@ public class SellerDao implements PersonDao<Seller> {
     }
 
     @Override
-    public void update(Seller seller) {
+    public Seller update(Seller seller) {
         jdbcTemplate.update(
-                "UPDATE sellers SET vatnumber=?, name=?, surname=?, email=?, birthdate=?, password=?, \"isBanned\"=? WHERE id=?",
+                "UPDATE sellers SET vatnumber=?, name=?, surname=?, email=?, birthdate=?, password=?, is_banned=? WHERE id=?",
                 seller.getVatNumber(),
                 seller.getName(),
                 seller.getSurname(),
@@ -72,6 +73,7 @@ public class SellerDao implements PersonDao<Seller> {
                 seller.isBanned(),
                 seller.getId()
         );
+        return seller;
     }
 
     @Override

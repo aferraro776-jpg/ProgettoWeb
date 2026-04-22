@@ -15,7 +15,7 @@ public class PhotoRowMapper implements RowMapper<Photo> {
         Photo photo = new Photo();
         photo.setId(rs.getInt("id"));
         photo.setUrl(rs.getString("url"));
-        photo.setPostId(rs.getInt("postId"));
+        photo.setPostId(rs.getInt("post_id"));
         return photo;
     }
 }

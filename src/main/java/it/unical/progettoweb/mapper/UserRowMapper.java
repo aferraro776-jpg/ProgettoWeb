@@ -15,7 +15,7 @@ public class UserRowMapper extends PersonRowMapper<User> {
         mapPersonFields(user, rs);
         user.setBirthDate(rs.getDate("birthdate"));
         user.setAuthProvider(rs.getString("auth_provider"));
-        user.setBanned(rs.getBoolean("isBanned"));
+        user.setBanned(rs.getBoolean("is_banned"));
         return user;
     }
 }

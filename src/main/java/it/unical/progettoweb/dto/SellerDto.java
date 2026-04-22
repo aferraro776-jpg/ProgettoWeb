@@ -1,18 +1,19 @@
 package it.unical.progettoweb.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
 public class SellerDto {
 
-    // Campi da Person (senza password)
     private int id;
     private String name;
     private String surname;
     private String email;
-
-    // Campi specifici di Seller
     private String vatNumber;
     private Date birthDate;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
 
     public SellerDto() {}
 
@@ -43,4 +44,7 @@ public class SellerDto {
 
     public Date getBirthDate() { return birthDate; }
     public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }

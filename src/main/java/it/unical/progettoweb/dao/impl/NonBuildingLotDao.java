@@ -30,7 +30,7 @@ public class NonBuildingLotDao implements RealEstateDao<NonBuildingLot> {
     }
 
     @Override
-    public void save(NonBuildingLot n) {
+    public NonBuildingLot save(NonBuildingLot n) {
         jdbcTemplate.update(
                 "INSERT INTO \"realEstate\" (id, title, description, \"squareMetres\", latit, longit, address, \"createdAt\", type, \"cropType\") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'NON_BUILDING_LOT', ?)",
@@ -38,6 +38,7 @@ public class NonBuildingLotDao implements RealEstateDao<NonBuildingLot> {
                 n.getLatit(), n.getLongit(), n.getAddress(),
                 n.getCropType()
         );
+        return n;
     }
 
     @Override
@@ -53,38 +54,39 @@ public class NonBuildingLotDao implements RealEstateDao<NonBuildingLot> {
 
     @Override
     public List<NonBuildingLot> getAll() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='NON_BUILDING_LOT' ORDER BY id", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='NON_BUILDING_LOT' ORDER BY id", rowMapper);
     }
 
     @Override
-    public void update(NonBuildingLot n) {
+    public NonBuildingLot update(NonBuildingLot n) {
         jdbcTemplate.update(
-                "UPDATE \"realEstate\" SET title=?, description=?, \"squareMetres\"=?, latit=?, longit=?, address=?, \"cropType\"=? WHERE id=?",
+                "UPDATE real_estate SET title=?, description=?, square_metres=?, latit=?, longit=?, address=?, croptype=? WHERE id=?",
                 n.getTitle(), n.getDescription(), n.getSquareMetres(),
                 n.getLatit(), n.getLongit(), n.getAddress(),
                 n.getCropType(), n.getId()
         );
+        return n;
     }
 
     @Override
     public void delete(Integer id) {
-        jdbcTemplate.update("DELETE FROM \"realEstate\" WHERE id=?", id);
+        jdbcTemplate.update("DELETE FROM real_estate WHERE id=?", id);
     }
 
     @Override
     public List<NonBuildingLot> findAllOrderBySquareMetresAsc() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='NON_BUILDING_LOT' ORDER BY \"squareMetres\" ASC", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='NON_BUILDING_LOT' ORDER BY square_metres ASC", rowMapper);
     }
 
     @Override
     public List<NonBuildingLot> findAllOrderBySquareMetresDesc() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='NON_BUILDING_LOT' ORDER BY \"squareMetres\" DESC", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='NON_BUILDING_LOT' ORDER BY square_metres DESC", rowMapper);
     }
 
     @Override
     public List<NonBuildingLot> findAllOrderByPriceAsc() {
         return jdbcTemplate.query(
-                "SELECT r.* FROM \"realEstate\" r JOIN posts p ON p.\"idRealEstate\"=r.id WHERE r.type='NON_BUILDING_LOT' ORDER BY p.\"currentPrice\" ASC",
+                "SELECT r.* FROM real_estate r JOIN posts p ON p.id_real_estate=r.id WHERE r.type='NON_BUILDING_LOT' ORDER BY p.current_price ASC",
                 rowMapper
         );
     }
@@ -92,7 +94,7 @@ public class NonBuildingLotDao implements RealEstateDao<NonBuildingLot> {
     @Override
     public List<NonBuildingLot> findAllOrderByPriceDesc() {
         return jdbcTemplate.query(
-                "SELECT r.* FROM \"realEstate\" r JOIN posts p ON p.\"idRealEstate\"=r.id WHERE r.type='NON_BUILDING_LOT' ORDER BY p.\"currentPrice\" DESC",
+                "SELECT r.* FROM real_estate r JOIN posts p ON p.id_real_erstate=r.id WHERE r.type='NON_BUILDING_LOT' ORDER BY p.current_price DESC",
                 rowMapper
         );
     }

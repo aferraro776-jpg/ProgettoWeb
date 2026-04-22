@@ -32,21 +32,22 @@ public class GarageDao implements RealEstateDao<Garage> {
     }
 
     @Override
-    public void save(Garage g) {
+    public Garage save(Garage g) {
         jdbcTemplate.update(
-                "INSERT INTO \"realEstate\" (id, title, description, \"squareMetres\", latit, longit, address, \"createdAt\", type, width, height, \"isElectric\") " +
+                "INSERT INTO real_estate (id, title, description, squareMetres, latit, longit, address, createdAt, type, width, height, isElectric) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'GARAGE', ?, ?, ?)",
                 g.getId(), g.getTitle(), g.getDescription(), g.getSquareMetres(),
                 g.getLatit(), g.getLongit(), g.getAddress(),
                 g.getWidth(), g.getHeight(), g.getIsElectric()
         );
+        return g;
     }
 
     @Override
     public Optional<Garage> get(Integer id) {
         try {
             return Optional.ofNullable(
-                    jdbcTemplate.queryForObject("SELECT * FROM \"realEstate\" WHERE id=? AND type='GARAGE'", rowMapper, id)
+                    jdbcTemplate.queryForObject("SELECT * FROM real_estate WHERE id=? AND type='GARAGE'", rowMapper, id)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -55,38 +56,39 @@ public class GarageDao implements RealEstateDao<Garage> {
 
     @Override
     public List<Garage> getAll() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='GARAGE' ORDER BY id", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='GARAGE' ORDER BY id", rowMapper);
     }
 
     @Override
-    public void update(Garage g) {
+    public Garage update(Garage g) {
         jdbcTemplate.update(
-                "UPDATE \"realEstate\" SET title=?, description=?, \"squareMetres\"=?, latit=?, longit=?, address=?, width=?, height=?, \"isElectric\"=? WHERE id=?",
+                "UPDATE real_estate SET title=?, description=?, square_metres=?, latit=?, longit=?, address=?, width=?, height=?, is_electric=? WHERE id=?",
                 g.getTitle(), g.getDescription(), g.getSquareMetres(),
                 g.getLatit(), g.getLongit(), g.getAddress(),
                 g.getWidth(), g.getHeight(), g.getIsElectric(), g.getId()
         );
+        return g;
     }
 
     @Override
     public void delete(Integer id) {
-        jdbcTemplate.update("DELETE FROM \"realEstate\" WHERE id=?", id);
+        jdbcTemplate.update("DELETE FROM real_estate WHERE id=?", id);
     }
 
     @Override
     public List<Garage> findAllOrderBySquareMetresAsc() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='GARAGE' ORDER BY \"squareMetres\" ASC", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='GARAGE' ORDER BY square_metres ASC", rowMapper);
     }
 
     @Override
     public List<Garage> findAllOrderBySquareMetresDesc() {
-        return jdbcTemplate.query("SELECT * FROM \"realEstate\" WHERE type='GARAGE' ORDER BY \"squareMetres\" DESC", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM real_estate WHERE type='GARAGE' ORDER BY square_metres DESC", rowMapper);
     }
 
     @Override
     public List<Garage> findAllOrderByPriceAsc() {
         return jdbcTemplate.query(
-                "SELECT r.* FROM \"realEstate\" r JOIN posts p ON p.\"idRealEstate\"=r.id WHERE r.type='GARAGE' ORDER BY p.\"currentPrice\" ASC",
+                "SELECT r.* FROM real_estate r JOIN posts p ON p.id_real_estate=r.id WHERE r.type='GARAGE' ORDER BY p.current_price ASC",
                 rowMapper
         );
     }
@@ -94,7 +96,7 @@ public class GarageDao implements RealEstateDao<Garage> {
     @Override
     public List<Garage> findAllOrderByPriceDesc() {
         return jdbcTemplate.query(
-                "SELECT r.* FROM \"realEstate\" r JOIN posts p ON p.\"idRealEstate\"=r.id WHERE r.type='GARAGE' ORDER BY p.\"currentPrice\" DESC",
+                "SELECT r.* FROM real_estate r JOIN posts p ON p.id_real_estate=r.id WHERE r.type='GARAGE' ORDER BY p.current_price DESC",
                 rowMapper
         );
     }

@@ -12,14 +12,16 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "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";
-    private static final long   EXPIRATION_MS = 86400000L;
+    private static final String SECRET = "progettoweb2025-chiave-segreta-molto-lunga-e-sicura-1234567890";
+    private static final long EXPIRATION_MS = 86400000L;
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    public String generateToken(String email) {
+    // genera il token con email e ruolo ("USER", "SELLER", "ADMIN")
+    public String generateToken(String email, String ruolo) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("ruolo", ruolo)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -28,6 +30,11 @@ public class JwtUtil {
 
     public String extractEmail(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    // estrae il ruolo dal token
+    public String extractRuolo(String token) {
+        return parseClaims(token).get("ruolo", String.class);
     }
 
     public boolean isTokenValid(String token) {

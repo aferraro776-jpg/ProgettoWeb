@@ -1,87 +1,96 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dao.impl.PostDaoImpl;
-import it.unical.progettoweb.model.Post;
+import it.unical.progettoweb.dto.PostCreateDto;
+import it.unical.progettoweb.dto.PostDto;
+import it.unical.progettoweb.service.PostService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
 
-    private final PostDaoImpl postDao;
+    private final PostService postService;
 
-    public PostController(PostDaoImpl postDao) {
-        this.postDao = postDao;
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Post>> getAll() {
-        return ResponseEntity.ok(postDao.getAll());
+    public ResponseEntity<List<PostDto>> getAll(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String direction) {
+        return ResponseEntity.ok(postService.getAll(sortBy, direction));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getById(@PathVariable int id) {
-        return postDao.get(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getById(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(postService.getById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
+
     @GetMapping("/seller/{sellerId}")
-    public ResponseEntity<List<Post>> getBySeller(@PathVariable int sellerId) {
-        return ResponseEntity.ok(postDao.findBySellerId(sellerId));
+    public ResponseEntity<?> getBySeller(@PathVariable int sellerId) {
+        try {
+            return ResponseEntity.ok(postService.getBySellerId(sellerId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/realestate/{realEstateId}")
-    public ResponseEntity<List<Post>> getByRealEstate(@PathVariable int realEstateId) {
-        return ResponseEntity.ok(postDao.findByRealEstateId(realEstateId));
-    }
-
-    @GetMapping("/order/price/asc")
-    public ResponseEntity<List<Post>> orderByPriceAsc() {
-        return ResponseEntity.ok(postDao.findAllOrderByPriceAsc());
-    }
-
-    @GetMapping("/order/price/desc")
-    public ResponseEntity<List<Post>> orderByPriceDesc() {
-        return ResponseEntity.ok(postDao.findAllOrderByPriceDesc());
+    public ResponseEntity<?> getByRealEstate(@PathVariable int realEstateId) {
+        try {
+            return ResponseEntity.ok(postService.getByRealEstateId(realEstateId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody Post post) {
-        postDao.save(post);
-        return ResponseEntity.ok("Post created");
+    public ResponseEntity<PostDto> create(@RequestBody PostCreateDto post) {
+        PostDto savedPost = postService.save(post);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable int id, @RequestBody Post post) {
-        return postDao.get(id).map(existing -> {
-            post.setId(id);
-            postDao.update(post);
-            return ResponseEntity.ok("Post updated");
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostCreateDto postDto) {
+        try {
+            PostDto updated = postService.update(id, postDto);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PatchMapping("/{id}/reduce-price")
-    public ResponseEntity<String> reducePrice(@PathVariable int id, @RequestBody Map<String, Double> body) {
-        double newPrice = body.get("newPrice");
-        return postDao.get(id).map(existing -> {
-            if (newPrice >= existing.getCurrentPrice()) {
-                return ResponseEntity.badRequest().body("Il nuovo prezzo deve essere inferiore a quello attuale");
-            }
-            postDao.reducePrice(id, newPrice);
-            return ResponseEntity.ok("Price reduced");
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> reducePrice(@PathVariable int id, @RequestParam double newPrice) {
+        try {
+            PostDto updated = postService.reducePrice(id, newPrice);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable int id) {
-        return postDao.get(id).map(existing -> {
-            postDao.delete(id);
-            return ResponseEntity.ok("Post deleted");
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> delete(@PathVariable int id) {
+        try {
+            postService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

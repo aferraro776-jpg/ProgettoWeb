@@ -3,22 +3,19 @@ package it.unical.progettoweb.config;
 import it.unical.progettoweb.filter.JwtAuthFilter;
 import it.unical.progettoweb.service.JwtUtil;
 import it.unical.progettoweb.service.OAuth2SuccessHandler;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 
 @Configuration
@@ -38,57 +35,48 @@ public class SecurityConfig {
         return new JwtAuthFilter(jwtUtil);
     }
 
-    // ─── Chain 1: API REST + error — stateless, JWT ───────────────────────────
     @Bean
-    @Order(1)
-    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/api/**", "/error")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // ← CHIAVE: IF_REQUIRED permette la sessione durante il flusso OAuth2
+                // dopo il login il client usa il JWT, quindi di fatto resta stateless
                 .sessionManagement(sm ->
-                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/login/**",
+                                "/oauth2/**",
                                 "/api/auth/**",
-                                "/api/search/**",
-                                "/error"
+                                "/register/**",
+                                "/error"           // ← aggiunto: evita redirect su pagine di errore
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+
+                // ← disabilita il redirect automatico a /login quando non autenticato
+                // per le API REST restituisce 401 invece di reindirizzare a Google
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
-                        )
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String path = request.getRequestURI();
+                            if (path.startsWith("/api/")) {
+                                response.sendError(401, "Non autenticato");
+                            }
+                        })
                 )
+
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2SuccessHandler)
+                )
+
                 .addFilterBefore(
                         jwtAuthFilter(),
                         UsernamePasswordAuthenticationFilter.class
                 );
-
-        return http.build();
-    }
-
-    // ─── Chain 2: OAuth2 Google — stateful, solo flusso login Google ──────────
-    @Bean
-    @Order(2)
-    public SecurityFilterChain oauth2FilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/login/**", "/oauth2/**")
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(sm ->
-                        sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2SuccessHandler)
-                        .failureUrl("/login?error=true")
-                )
-                .formLogin(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

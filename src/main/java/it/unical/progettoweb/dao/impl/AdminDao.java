@@ -23,7 +23,7 @@ public class AdminDao implements PersonDao<Admin> {
     }
 
     @Override
-    public void save(Admin admin) {
+    public Admin save(Admin admin) {
         jdbcTemplate.update(
                 "INSERT INTO admins (id, name, surname, email, password) VALUES (?, ?, ?, ?, ?)",
                 admin.getId(),
@@ -32,6 +32,7 @@ public class AdminDao implements PersonDao<Admin> {
                 admin.getEmail(),
                 admin.getPassword()
         );
+        return admin;
     }
 
     @Override
@@ -56,7 +57,7 @@ public class AdminDao implements PersonDao<Admin> {
     }
 
     @Override
-    public void update(Admin admin) {
+    public Admin update(Admin admin) {
         jdbcTemplate.update(
                 "UPDATE admins SET name=?, surname=?, email=?, password=? WHERE id=?",
                 admin.getName(),
@@ -65,6 +66,7 @@ public class AdminDao implements PersonDao<Admin> {
                 admin.getPassword(),
                 admin.getId()
         );
+        return admin;
     }
 
     @Override
