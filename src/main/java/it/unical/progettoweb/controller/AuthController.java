@@ -30,6 +30,11 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final RegistrationService registrationService;
 
+    @GetMapping("/hash")
+    public String hash() {
+        return passwordEncoder.encode("Admin123!");
+    }
+
     @PostMapping("/register/user")
     public ResponseEntity<String> registerUser(@RequestBody UserDto dto) {
         try {

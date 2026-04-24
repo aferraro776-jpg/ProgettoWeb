@@ -6,7 +6,7 @@ CREATE TABLE public.sellers (
                                   email varchar(50) NOT NULL,
                                   birth_date date NOT NULL,
                                   "password" varchar(60) NOT NULL,
-                                  isBanned boolean NOT NULL DEFAULT false,
+                                  is_banned boolean NOT NULL DEFAULT false,
                                   CONSTRAINT sellers_email_key UNIQUE (email),
                                   CONSTRAINT sellers_id_check CHECK (((id >= 10000) AND (id <= 99999))),
                                   CONSTRAINT sellers_vatNumber_key UNIQUE (vat_number),
