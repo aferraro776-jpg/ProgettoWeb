@@ -25,7 +25,7 @@ public class SellerDao implements PersonDao<Seller> {
     @Override
     public Seller save(Seller seller) {
         jdbcTemplate.update(
-                "INSERT INTO sellers (id, vatnumber, name, surname, email, birthdate, password, is_banned) " +
+                "INSERT INTO sellers (id, vat_number, name, surname, email, birth_date, password, is_banned) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 seller.getId(),
                 seller.getVatNumber(),
@@ -63,7 +63,7 @@ public class SellerDao implements PersonDao<Seller> {
     @Override
     public Seller update(Seller seller) {
         jdbcTemplate.update(
-                "UPDATE sellers SET vatnumber=?, name=?, surname=?, email=?, birthdate=?, password=?, is_banned=? WHERE id=?",
+                "UPDATE sellers SET vat_number=?, name=?, surname=?, email=?, birth_date=?, password=?, is_banned=? WHERE id=?",
                 seller.getVatNumber(),
                 seller.getName(),
                 seller.getSurname(),
@@ -95,7 +95,7 @@ public class SellerDao implements PersonDao<Seller> {
 
     public boolean existsByVatNumber(String vatNumber) {
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM sellers WHERE vatnumber = ?",
+                "SELECT COUNT(*) FROM sellers WHERE vat_number = ?",
                 Integer.class, vatNumber
         );
         return count != null && count > 0;
