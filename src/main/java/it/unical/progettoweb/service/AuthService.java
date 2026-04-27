@@ -6,24 +6,31 @@ import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
 import it.unical.progettoweb.dto.send.SellerDto;
 import it.unical.progettoweb.dto.send.UserDto;
+import it.unical.progettoweb.model.Admin;
 import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class RegistrationService {
+public class AuthService {
 
     private final UserDao userDao;
     private final SellerDao sellerDao;
     private final AdminDao adminDao;
     private final BlacklistDao blacklistDao;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
     private final Random random = new Random();
@@ -125,5 +132,50 @@ public class RegistrationService {
         seller.setBanned(false);
 
         sellerDao.save(seller);
+    }
+    public String login(String email, String password) {
+
+        Optional<User> userOpt = userDao.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if ("GOOGLE".equals(user.getAuthProvider()))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Questo account usa Google per accedere.");
+            if (!passwordEncoder.matches(password, user.getPassword()))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
+            return jwtUtil.generateToken(email, "USER");
+        }
+
+        Optional<Seller> sellerOpt = sellerDao.findByEmail(email);
+        if (sellerOpt.isPresent()) {
+            Seller seller = sellerOpt.get();
+            if (!passwordEncoder.matches(password, seller.getPassword()))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
+            return jwtUtil.generateToken(email, "SELLER");
+        }
+
+        Optional<Admin> adminOpt = adminDao.findByEmail(email);
+        if (adminOpt.isPresent()) {
+            Admin admin = adminOpt.get();
+            if (!passwordEncoder.matches(password, admin.getPassword()))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
+            return jwtUtil.generateToken(email, "ADMIN");
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
+    }
+    public UserDto getMe(String authHeader) {
+        String token = authHeader.substring(7);
+
+        if (!jwtUtil.isTokenValid(token))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token non valido o scaduto.");
+
+        String email = jwtUtil.extractEmail(token);
+
+        return userDao.findByEmail(email)
+                .map(user -> new UserDto(
+                        user.getId(), user.getName(), user.getSurname(),
+                        user.getEmail(), user.getBirthDate(), user.getAuthProvider()
+                ))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
     }
 }

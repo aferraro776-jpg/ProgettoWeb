@@ -1,34 +1,30 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dao.impl.AdminDao;
-import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
 import it.unical.progettoweb.dto.send.SellerDto;
 import it.unical.progettoweb.dto.send.UserDto;
-import it.unical.progettoweb.model.Admin;
-import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.model.User;
-import it.unical.progettoweb.service.JwtUtil;
-import it.unical.progettoweb.service.RegistrationService;
+import it.unical.progettoweb.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import it.unical.progettoweb.service.EmailService;
+import it.unical.progettoweb.service.OtpService;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserDao userDao;
-    private final SellerDao sellerDao;
-    private final AdminDao adminDao;
-    private final JwtUtil jwtUtil;
+
     private final PasswordEncoder passwordEncoder;
-    private final RegistrationService registrationService;
+    private final AuthService authService;
+    private final OtpService otpService;
+    private final EmailService emailService;
+    private final UserDao userDao;
 
     @GetMapping("/hash")
     public String hash() {
@@ -38,7 +34,7 @@ public class AuthController {
     @PostMapping("/register/user")
     public ResponseEntity<String> registerUser(@RequestBody UserDto dto) {
         try {
-            registrationService.registraUser(dto);
+            authService.registraUser(dto);
             return ResponseEntity.ok("Registrazione avvenuta con successo.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -48,7 +44,7 @@ public class AuthController {
     @PostMapping("/register/seller")
     public ResponseEntity<String> registerSeller(@RequestBody SellerDto dto) {
         try {
-            registrationService.registraSeller(dto);
+            authService.registraSeller(dto);
             return ResponseEntity.ok("Registrazione venditore avvenuta con successo.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -57,56 +53,53 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-        String email    = body.get("email");
-        String password = body.get("password");
-
-        // cerca in users
-        Optional<User> userOpt = userDao.findByEmail(email);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if ("GOOGLE".equals(user.getAuthProvider()))
-                return ResponseEntity.status(401).body("Questo account usa Google per accedere.");
-            if (!passwordEncoder.matches(password, user.getPassword()))
-                return ResponseEntity.status(401).body("Credenziali non valide.");
-            return ResponseEntity.ok(Map.of("token", jwtUtil.generateToken(email, "USER")));
-        }
-
-        // cerca in sellers
-        Optional<Seller> sellerOpt = sellerDao.findByEmail(email);
-        if (sellerOpt.isPresent()) {
-            Seller seller = sellerOpt.get();
-            if (!passwordEncoder.matches(password, seller.getPassword()))
-                return ResponseEntity.status(401).body("Credenziali non valide.");
-            return ResponseEntity.ok(Map.of("token", jwtUtil.generateToken(email, "SELLER")));
-        }
-
-        // cerca in admins
-        Optional<Admin> adminOpt = adminDao.findByEmail(email);
-        if (adminOpt.isPresent()) {
-            Admin admin = adminOpt.get();
-            if (!passwordEncoder.matches(password, admin.getPassword()))
-                return ResponseEntity.status(401).body("Credenziali non valide.");
-            return ResponseEntity.ok(Map.of("token", jwtUtil.generateToken(email, "ADMIN")));
-        }
-
-        // non trovato in nessuna tabella
-        return ResponseEntity.status(401).body("Credenziali non valide.");
+        String token = authService.login(body.get("email"), body.get("password"));
+        return ResponseEntity.ok(Map.of("token", token));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> me(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
+    public ResponseEntity<UserDto> me(@RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(authService.getMe(authHeader));
+    }
 
-        if (!jwtUtil.isTokenValid(token))
-            return ResponseEntity.status(401).body("Token non valido o scaduto.");
+    @PostMapping("/register/request-otp")
+    public ResponseEntity<String> requestRegistrationOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        if (userDao.findByEmail(email).isPresent())
+            return ResponseEntity.badRequest().body("Email già registrata.");
+        String code = otpService.generateOtp(email);
+        emailService.sendOtp(email, code, "Registrazione");
+        return ResponseEntity.ok("OTP inviato.");
+    }
 
-        String email = jwtUtil.extractEmail(token);
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        if (userDao.findByEmail(email).isEmpty())
+            return ResponseEntity.badRequest().body("Email non trovata.");
+        String code = otpService.generateOtp(email);
+        emailService.sendOtp(email, code, "Recupero password");
+        return ResponseEntity.ok("OTP inviato.");
+    }
 
-        return userDao.findByEmail(email)
-                .map(user -> ResponseEntity.ok(new UserDto(
-                        user.getId(), user.getName(), user.getSurname(),
-                        user.getEmail(), user.getBirthDate(), user.getAuthProvider()
-                )))
-                .orElse(ResponseEntity.notFound().build());
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> body) {
+        String email   = body.get("email");
+        String otp     = body.get("otp");
+        String newPass = body.get("newPassword");
+
+        if (!otpService.verifyOtp(email, otp))
+            return ResponseEntity.badRequest().body("OTP non valido o scaduto.");
+
+        User user = userDao.findByEmail(email)
+                .orElse(null);
+
+        if (user == null)
+            return ResponseEntity.badRequest().body("Utente non trovato.");
+
+        user.setPassword(passwordEncoder.encode(newPass));
+        userDao.update(user);
+
+        return ResponseEntity.ok("Password aggiornata.");
     }
 }
