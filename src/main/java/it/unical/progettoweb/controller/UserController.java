@@ -1,6 +1,6 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.UserDto;
+import it.unical.progettoweb.dto.send.UserDto;
 import it.unical.progettoweb.model.User;
 import it.unical.progettoweb.service.JwtUtil;
 import it.unical.progettoweb.service.UserService;

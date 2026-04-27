@@ -1,6 +1,6 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.SellerDto;
+import it.unical.progettoweb.dto.send.SellerDto;
 import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.service.JwtUtil;
 import it.unical.progettoweb.service.SellerService;

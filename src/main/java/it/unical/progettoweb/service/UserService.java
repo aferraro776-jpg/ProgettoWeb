@@ -4,7 +4,7 @@ import it.unical.progettoweb.dao.impl.AdminDao;
 import it.unical.progettoweb.dao.impl.BlacklistDao;
 import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
-import it.unical.progettoweb.dto.UserDto;
+import it.unical.progettoweb.dto.send.UserDto;
 import it.unical.progettoweb.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
