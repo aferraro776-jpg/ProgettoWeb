@@ -34,7 +34,7 @@ public class ApartmentDao implements RealEstateDao<Apartment> {
     @Override
     public Apartment save(Apartment a) {
         jdbcTemplate.update(
-                "INSERT INTO realEstate (id, title, description, square_metres, latit, longit, address, created_at, type, number_of_rooms, floor, has_elevator) " +
+                "INSERT INTO real_estate (id, title, description, square_metres, latit, longit, address, created_at, type, number_of_rooms, floor, has_elevator) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'APARTMENT', ?, ?, ?)",
                 a.getId(), a.getTitle(), a.getDescription(), a.getSquareMetres(),
                 a.getLatit(), a.getLongit(), a.getAddress(),
