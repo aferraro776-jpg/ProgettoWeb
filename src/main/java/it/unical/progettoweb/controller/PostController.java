@@ -1,7 +1,7 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.PostCreateDto;
-import it.unical.progettoweb.dto.PostDto;
+import it.unical.progettoweb.dto.create.PostCreateDto;
+import it.unical.progettoweb.dto.send.PostDto;
 import it.unical.progettoweb.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

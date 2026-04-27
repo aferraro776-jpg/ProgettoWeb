@@ -1,8 +1,8 @@
-package it.unical.progettoweb.dto;
+package it.unical.progettoweb.dto.send;
 
 import java.time.LocalDateTime;
 
-public class ApartmentDto {
+public class BuildingLotDto {
 
     // Campi ereditati da RealEstate
     private int id;
@@ -16,16 +16,16 @@ public class ApartmentDto {
     private LocalDateTime createdAt;
     private String type;
 
-    // Campi specifici di Apartment
-    private Integer floor;
-    private Boolean hasElevator;
+    // Campi specifici di BuildingLot
+    private Double cubature;
+    private String plannedUse;
 
-    public ApartmentDto() {}
+    public BuildingLotDto() {}
 
-    public ApartmentDto(int id, String title, int numberOfRooms, String description,
-                        double squareMetres, double latit, double longit,
-                        String address, LocalDateTime createdAt, String type,
-                        Integer floor, Boolean hasElevator) {
+    public BuildingLotDto(int id, String title, int numberOfRooms, String description,
+                          double squareMetres, double latit, double longit,
+                          String address, LocalDateTime createdAt, String type,
+                          Double cubature, String plannedUse) {
         this.id = id;
         this.title = title;
         this.numberOfRooms = numberOfRooms;
@@ -36,8 +36,8 @@ public class ApartmentDto {
         this.address = address;
         this.createdAt = createdAt;
         this.type = type;
-        this.floor = floor;
-        this.hasElevator = hasElevator;
+        this.cubature = cubature;
+        this.plannedUse = plannedUse;
     }
 
     public int getId() { return id; }
@@ -70,9 +70,9 @@ public class ApartmentDto {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public Integer getFloor() { return floor; }
-    public void setFloor(Integer floor) { this.floor = floor; }
+    public Double getCubature() { return cubature; }
+    public void setCubature(Double cubature) { this.cubature = cubature; }
 
-    public Boolean getHasElevator() { return hasElevator; }
-    public void setHasElevator(Boolean hasElevator) { this.hasElevator = hasElevator; }
+    public String getPlannedUse() { return plannedUse; }
+    public void setPlannedUse(String plannedUse) { this.plannedUse = plannedUse; }
 }
