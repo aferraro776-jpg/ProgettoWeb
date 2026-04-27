@@ -15,8 +15,8 @@ public class SellerRowMapper extends PersonRowMapper<Seller> {
     public Seller mapRow(ResultSet rs,int numRow) throws SQLException {
         Seller seller = new Seller();
         mapPersonFields(seller, rs);
-        seller.setVatNumber(rs.getString("vatnumber"));
-        seller.setBirthDate(rs.getDate("birthdate"));
+        seller.setVatNumber(rs.getString("vat_number"));
+        seller.setBirthDate(rs.getDate("birth_date"));
         return seller;
     }
 }
