@@ -13,5 +13,4 @@ public class PersonDto {
     private String name;
     private String surname;
     private String email;
-    // password assente, nei dto è rischioso
 }
