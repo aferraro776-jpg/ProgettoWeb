@@ -41,8 +41,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // ← CHIAVE: IF_REQUIRED permette la sessione durante il flusso OAuth2
-                // dopo il login il client usa il JWT, quindi di fatto resta stateless
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
@@ -52,14 +50,16 @@ public class SecurityConfig {
                                 "/login/**",
                                 "/oauth2/**",
                                 "/api/auth/**",
+                                "/api/posts",
+                                "/api/posts/**",
+                                "/api/reviews/**",
                                 "/register/**",
-                                "/error"           // ← aggiunto: evita redirect su pagine di errore
+                                "/error"
                         ).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
 
-                // ← disabilita il redirect automatico a /login quando non autenticato
-                // per le API REST restituisce 401 invece di reindirizzare a Google
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             String path = request.getRequestURI();
@@ -85,7 +85,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:4200"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
