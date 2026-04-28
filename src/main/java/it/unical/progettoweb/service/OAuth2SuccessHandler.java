@@ -37,7 +37,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Optional<User> existing = userDao.findByEmail(email);
         if (existing.isEmpty()) {
             User newUser = new User();
-            newUser.setId(generateUniqueId()); // genera id sicuro
+            newUser.setId(generateUniqueId());
             newUser.setEmail(email);
             newUser.setName(name);
             newUser.setSurname(surname);
@@ -48,8 +48,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             userDao.save(newUser);
         }
 
-        // il token include il ruolo USER — Google login è sempre acquirente
-        String jwt = jwtUtil.generateToken(email, "USER");
+        // Recupera l'utente (esistente o appena salvato) per prendere l'id
+        User user = userDao.findByEmail(email).orElseThrow();
+        String jwt = jwtUtil.generateToken(email, "USER", user.getId());
+
         String redirectUrl = "http://localhost:4200/oauth2/callback?token=" + jwt;
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }

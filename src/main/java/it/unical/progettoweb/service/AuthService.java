@@ -142,7 +142,7 @@ public class AuthService {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Questo account usa Google per accedere.");
             if (!passwordEncoder.matches(password, user.getPassword()))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
-            return jwtUtil.generateToken(email, "USER");
+            return jwtUtil.generateToken(email, "USER",user.getId());
         }
 
         Optional<Seller> sellerOpt = sellerDao.findByEmail(email);
@@ -150,7 +150,7 @@ public class AuthService {
             Seller seller = sellerOpt.get();
             if (!passwordEncoder.matches(password, seller.getPassword()))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
-            return jwtUtil.generateToken(email, "SELLER");
+            return jwtUtil.generateToken(email, "SELLER",seller.getId());
         }
 
         Optional<Admin> adminOpt = adminDao.findByEmail(email);
@@ -158,7 +158,7 @@ public class AuthService {
             Admin admin = adminOpt.get();
             if (!passwordEncoder.matches(password, admin.getPassword()))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
-            return jwtUtil.generateToken(email, "ADMIN");
+            return jwtUtil.generateToken(email, "ADMIN",admin.getId());
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
