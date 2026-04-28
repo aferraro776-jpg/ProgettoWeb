@@ -1,4 +1,4 @@
-package it.unical.progettoweb.dto.send;
+package it.unical.progettoweb.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

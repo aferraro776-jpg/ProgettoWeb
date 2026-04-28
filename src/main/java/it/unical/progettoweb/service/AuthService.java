@@ -4,8 +4,9 @@ import it.unical.progettoweb.dao.impl.AdminDao;
 import it.unical.progettoweb.dao.impl.BlacklistDao;
 import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
-import it.unical.progettoweb.dto.send.SellerDto;
-import it.unical.progettoweb.dto.send.UserDto;
+import it.unical.progettoweb.dto.response.UserDto;
+import it.unical.progettoweb.dto.request.SellerRequest;
+import it.unical.progettoweb.dto.request.UserRequest;
 import it.unical.progettoweb.model.Admin;
 import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.model.User;
@@ -14,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 
 import java.text.SimpleDateFormat;
 import java.util.Optional;
@@ -30,7 +30,8 @@ public class AuthService {
     private final BlacklistDao blacklistDao;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
+    private final OtpService otpService;
+    private final EmailService emailService;
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
     private final Random random = new Random();
@@ -80,7 +81,7 @@ public class AuthService {
             throw new IllegalArgumentException(errori);
     }
 
-    // ── controlla la data di nascita: SDF.format() produce "yyyy-MM-dd" compatibile con la regex
+    // ── controlla la data di nascita
     private void validaDataNascita(java.util.Date data) {
         if (data == null)
             throw new IllegalArgumentException("Data di nascita obbligatoria.");
@@ -88,8 +89,11 @@ public class AuthService {
             throw new IllegalArgumentException("Data di nascita non valida.");
     }
 
-    // ── registrazione acquirente
-    public void registraUser(UserDto dto) {
+    // ── registrazione acquirente (con verifica OTP)
+    public void registraUser(UserRequest dto) {
+        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+            throw new IllegalArgumentException("OTP non valido o scaduto.");
+
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
         validaPassword(dto.getPassword());
@@ -109,7 +113,7 @@ public class AuthService {
     }
 
     // ── registrazione venditore
-    public void registraSeller(SellerDto dto) {
+    public void registraSeller(SellerRequest dto) {
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
         validaPassword(dto.getPassword());
@@ -133,8 +137,9 @@ public class AuthService {
 
         sellerDao.save(seller);
     }
-    public String login(String email, String password) {
 
+    // ── login — restituisce il token JWT
+    public String login(String email, String password) {
         Optional<User> userOpt = userDao.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -163,6 +168,8 @@ public class AuthService {
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
     }
+
+    // ── restituisce il profilo dell'utente autenticato dal token JWT
     public UserDto getMe(String authHeader) {
         String token = authHeader.substring(7);
 
@@ -173,9 +180,42 @@ public class AuthService {
 
         return userDao.findByEmail(email)
                 .map(user -> new UserDto(
-                        user.getId(), user.getName(), user.getSurname(),
-                        user.getEmail(), user.getBirthDate(), user.getAuthProvider()
+                        user.getId(),
+                        user.getName(),
+                        user.getSurname(),
+                        user.getEmail(),
+                        user.getBirthDate(),
+                        user.getAuthProvider()
                 ))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
+    }
+
+    // ── invia OTP per la registrazione
+    public void inviaOtpRegistrazione(String email) {
+        if (userDao.findByEmail(email).isPresent())
+            throw new IllegalArgumentException("Email già registrata.");
+        String code = otpService.generateOtp(email);
+        emailService.sendOtp(email, code, "Registrazione");
+    }
+
+    // ── invia OTP per il recupero password
+    public void inviaOtpRecuperoPassword(String email) {
+        if (userDao.findByEmail(email).isEmpty())
+            throw new IllegalArgumentException("Email non trovata.");
+        String code = otpService.generateOtp(email);
+        emailService.sendOtp(email, code, "Recupero password");
+    }
+
+    // ── reset password con verifica OTP
+    public void resetPassword(String email, String otp, String newPassword) {
+        if (!otpService.verifyOtp(email, otp))
+            throw new IllegalArgumentException("OTP non valido o scaduto.");
+
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato."));
+
+        validaPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userDao.update(user);
     }
 }

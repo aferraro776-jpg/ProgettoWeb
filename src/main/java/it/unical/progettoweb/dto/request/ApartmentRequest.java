@@ -1,11 +1,11 @@
-package it.unical.progettoweb.dto.create;
+package it.unical.progettoweb.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ApartmentCreateDTO extends RealEstateCreateDto {
+public class ApartmentRequest extends RealEstateCreateRequest {
     private Integer floor;
     private Boolean hasElevator;
 }

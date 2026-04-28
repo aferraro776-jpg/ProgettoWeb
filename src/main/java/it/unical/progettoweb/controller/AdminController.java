@@ -4,7 +4,7 @@ import it.unical.progettoweb.dao.impl.AdminDao;
 import it.unical.progettoweb.dao.impl.BlacklistDao;
 import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
-import it.unical.progettoweb.dto.BlacklistRequestDto;
+import it.unical.progettoweb.dto.request.BlacklistRequest;
 import it.unical.progettoweb.model.Admin;
 import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.model.User;
@@ -31,29 +31,21 @@ public class AdminController {
     private final AdminDao adminDao;
     private final BlacklistDao blacklistDao;
 
-    // GET /api/admin/users
-    // Restituisce la lista di tutti gli acquirenti registrati
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userDao.getAll());
     }
 
-    // GET /api/admin/sellers
-    // Restituisce la lista di tutti i venditori registrati
     @GetMapping("/sellers")
     public ResponseEntity<List<Seller>> getAllSellers() {
         return ResponseEntity.ok(sellerDao.getAll());
     }
 
-    // GET /api/admin/admins
-    // Restituisce la lista di tutti gli amministratori
     @GetMapping("/admins")
     public ResponseEntity<List<Admin>> getAllAdmins() {
         return ResponseEntity.ok(adminDao.getAll());
     }
 
-    // GET /api/admin/blacklist
-    // Restituisce la lista di tutte le email in blacklist
     @GetMapping("/blacklist")
     public ResponseEntity<List<String>> getBlacklist() {
         return ResponseEntity.ok(blacklistDao.getAll());
@@ -63,7 +55,7 @@ public class AdminController {
     // Banna un utente: lo aggiunge alla blacklist e setta is_banned=true
     // Body: { "email": "utente@example.com" }
     @PostMapping("/ban")
-    public ResponseEntity<String> banUser(@RequestBody BlacklistRequestDto request) {
+    public ResponseEntity<String> banUser(@RequestBody BlacklistRequest request) {
         try {
             adminService.banUser(request.getEmail());
             return ResponseEntity.ok("Utente bannato con successo.");
@@ -80,12 +72,11 @@ public class AdminController {
     // Rimuove il ban: elimina dalla blacklist e setta is_banned=false
     // Body: { "email": "utente@example.com" }
     @PostMapping("/unban")
-    public ResponseEntity<String> unbanUser(@RequestBody BlacklistRequestDto request) {
+    public ResponseEntity<String> unbanUser(@RequestBody BlacklistRequest request) {
         try {
             adminService.unbanUser(request.getEmail());
             return ResponseEntity.ok("Ban rimosso con successo.");
         } catch (IllegalStateException e) {
-            // Utente non risulta bannato
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -114,7 +105,7 @@ public class AdminController {
     // Promuove un User ad Admin: copia i dati in admins, cancella da users
     // Body: { "email": "utente@example.com" }
     @PostMapping("/promote")
-    public ResponseEntity<String> promoteToAdmin(@RequestBody BlacklistRequestDto request) {
+    public ResponseEntity<String> promoteToAdmin(@RequestBody BlacklistRequest request) {
         try {
             adminService.promuoviAdAdmin(request.getEmail());
             return ResponseEntity.ok("Utente promosso ad amministratore.");

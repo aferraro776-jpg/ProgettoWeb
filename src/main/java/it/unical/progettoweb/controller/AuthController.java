@@ -1,8 +1,9 @@
 package it.unical.progettoweb.controller;
 
 import it.unical.progettoweb.dao.impl.UserDao;
-import it.unical.progettoweb.dto.send.SellerDto;
-import it.unical.progettoweb.dto.send.UserDto;
+import it.unical.progettoweb.dto.response.UserDto;
+import it.unical.progettoweb.dto.request.SellerRequest;
+import it.unical.progettoweb.dto.request.UserRequest;
 import it.unical.progettoweb.model.User;
 import it.unical.progettoweb.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/user")
-    public ResponseEntity<String> registerUser(@RequestBody UserDto dto) {
+    public ResponseEntity<String> registerUser(@RequestBody UserRequest dto) {
         try {
             authService.registraUser(dto);
             return ResponseEntity.ok("Registrazione avvenuta con successo.");
@@ -42,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/seller")
-    public ResponseEntity<String> registerSeller(@RequestBody SellerDto dto) {
+    public ResponseEntity<String> registerSeller(@RequestBody SellerRequest dto) {
         try {
             authService.registraSeller(dto);
             return ResponseEntity.ok("Registrazione venditore avvenuta con successo.");

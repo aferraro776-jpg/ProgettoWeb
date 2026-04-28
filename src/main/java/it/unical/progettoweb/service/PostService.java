@@ -1,8 +1,8 @@
 package it.unical.progettoweb.service;
 
 import it.unical.progettoweb.dao.PostDao;
-import it.unical.progettoweb.dto.create.PostCreateDto;
-import it.unical.progettoweb.dto.send.PostDto;
+import it.unical.progettoweb.dto.request.PostCreateDto;
+import it.unical.progettoweb.dto.response.PostDto;
 import it.unical.progettoweb.model.Post;
 import org.springframework.stereotype.Service;
 

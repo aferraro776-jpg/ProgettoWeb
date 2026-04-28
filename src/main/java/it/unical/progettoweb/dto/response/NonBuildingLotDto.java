@@ -1,8 +1,8 @@
-package it.unical.progettoweb.dto.send;
+package it.unical.progettoweb.dto.response;
 
 import java.time.LocalDateTime;
 
-public class GarageDto {
+public class NonBuildingLotDto {
 
     // Campi ereditati da RealEstate
     private int id;
@@ -16,17 +16,15 @@ public class GarageDto {
     private LocalDateTime createdAt;
     private String type;
 
-    // Campi specifici di Garage
-    private Double width;
-    private Double height;
-    private Boolean isElectric;
+    // Campi specifici di NonBuildingLot
+    private String cropType;
 
-    public GarageDto() {}
+    public NonBuildingLotDto() {}
 
-    public GarageDto(int id, String title, int numberOfRooms, String description,
-                     double squareMetres, double latit, double longit,
-                     String address, LocalDateTime createdAt, String type,
-                     Double width, Double height, Boolean isElectric) {
+    public NonBuildingLotDto(int id, String title, int numberOfRooms, String description,
+                             double squareMetres, double latit, double longit,
+                             String address, LocalDateTime createdAt, String type,
+                             String cropType) {
         this.id = id;
         this.title = title;
         this.numberOfRooms = numberOfRooms;
@@ -37,9 +35,7 @@ public class GarageDto {
         this.address = address;
         this.createdAt = createdAt;
         this.type = type;
-        this.width = width;
-        this.height = height;
-        this.isElectric = isElectric;
+        this.cropType = cropType;
     }
 
     public int getId() { return id; }
@@ -72,12 +68,6 @@ public class GarageDto {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public Double getWidth() { return width; }
-    public void setWidth(Double width) { this.width = width; }
-
-    public Double getHeight() { return height; }
-    public void setHeight(Double height) { this.height = height; }
-
-    public Boolean getIsElectric() { return isElectric; }
-    public void setIsElectric(Boolean isElectric) { this.isElectric = isElectric; }
+    public String getCropType() { return cropType; }
+    public void setCropType(String cropType) { this.cropType = cropType; }
 }

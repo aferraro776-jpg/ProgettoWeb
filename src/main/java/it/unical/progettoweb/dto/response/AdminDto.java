@@ -1,4 +1,5 @@
-package it.unical.progettoweb.dto.send;
+package it.unical.progettoweb.dto.response;
+
 
 public class AdminDto {
 

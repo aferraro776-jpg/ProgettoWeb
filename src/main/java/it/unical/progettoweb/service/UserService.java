@@ -4,7 +4,7 @@ import it.unical.progettoweb.dao.impl.AdminDao;
 import it.unical.progettoweb.dao.impl.BlacklistDao;
 import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
-import it.unical.progettoweb.dto.send.UserDto;
+import it.unical.progettoweb.dto.request.UserRequest;
 import it.unical.progettoweb.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,7 +64,7 @@ public class UserService {
     }
 
     // aggiorna nome, cognome, email e data di nascita
-    public void aggiornaProfilo(String emailDalToken, UserDto dto) {
+    public void aggiornaProfilo(String emailDalToken, UserRequest dto) {
         User user = getUtenteByEmail(emailDalToken);
 
         validaGeneralita(dto.getName(), dto.getSurname());

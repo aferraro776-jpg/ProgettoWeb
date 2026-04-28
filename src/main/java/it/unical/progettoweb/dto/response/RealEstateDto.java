@@ -1,10 +1,9 @@
-package it.unical.progettoweb.dto.send;
+package it.unical.progettoweb.dto.response;
 
 import java.time.LocalDateTime;
 
-public class BuildingLotDto {
+public class RealEstateDto {
 
-    // Campi ereditati da RealEstate
     private int id;
     private String title;
     private int numberOfRooms;
@@ -16,16 +15,11 @@ public class BuildingLotDto {
     private LocalDateTime createdAt;
     private String type;
 
-    // Campi specifici di BuildingLot
-    private Double cubature;
-    private String plannedUse;
+    public RealEstateDto() {}
 
-    public BuildingLotDto() {}
-
-    public BuildingLotDto(int id, String title, int numberOfRooms, String description,
-                          double squareMetres, double latit, double longit,
-                          String address, LocalDateTime createdAt, String type,
-                          Double cubature, String plannedUse) {
+    public RealEstateDto(int id, String title, int numberOfRooms, String description,
+                         double squareMetres, double latit, double longit,
+                         String address, LocalDateTime createdAt, String type) {
         this.id = id;
         this.title = title;
         this.numberOfRooms = numberOfRooms;
@@ -36,8 +30,6 @@ public class BuildingLotDto {
         this.address = address;
         this.createdAt = createdAt;
         this.type = type;
-        this.cubature = cubature;
-        this.plannedUse = plannedUse;
     }
 
     public int getId() { return id; }
@@ -69,10 +61,4 @@ public class BuildingLotDto {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-
-    public Double getCubature() { return cubature; }
-    public void setCubature(Double cubature) { this.cubature = cubature; }
-
-    public String getPlannedUse() { return plannedUse; }
-    public void setPlannedUse(String plannedUse) { this.plannedUse = plannedUse; }
 }

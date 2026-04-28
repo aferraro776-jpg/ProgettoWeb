@@ -2,8 +2,8 @@ package it.unical.progettoweb.service;
 
 import it.unical.progettoweb.dao.impl.*;
 
-import it.unical.progettoweb.dto.create.*;
-import it.unical.progettoweb.dto.send.RealEstateDto;
+import it.unical.progettoweb.dto.request.*;
+import it.unical.progettoweb.dto.response.RealEstateDto;
 import it.unical.progettoweb.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,16 +27,16 @@ public class RealEstateService {
     private final Random random = new Random();
 
 
-    public RealEstateDto save(RealEstateCreateDto dto) {
+    public RealEstateDto save(RealEstateCreateRequest dto) {
         return switch (dto) {
-            case ApartmentCreateDTO d -> {
+            case ApartmentRequest d -> {
                 Apartment e = new Apartment();
                 mapCommon(e, d);
                 e.setFloor(d.getFloor());
                 e.setHasElevator(d.getHasElevator());
                 yield toDto(apartmentDao.save(e));
             }
-            case VillaCreateDTO d -> {
+            case VillaCreateRequest d -> {
                 Villa e = new Villa();
                 mapCommon(e, d);
                 e.setHasGarden(d.getHasGarden());
@@ -44,7 +44,7 @@ public class RealEstateService {
                 e.setNumberOfFloors(d.getNumberOfFloors());
                 yield toDto(villaDao.save(e));
             }
-            case GarageCreateDTO d -> {
+            case GarageRequest d -> {
                 Garage e = new Garage();
                 mapCommon(e, d);
                 e.setWidth(d.getWidth());
@@ -52,14 +52,14 @@ public class RealEstateService {
                 e.setIsElectric(d.getIsElectric());
                 yield toDto(garageDao.save(e));
             }
-            case BuildingLotCreateDTO d -> {
+            case BuildingLotRequest d -> {
                 BuildingLot e = new BuildingLot();
                 mapCommon(e, d);
                 e.setCubature(d.getCubature());
                 e.setPlannedUse(d.getPlannedUse());
                 yield toDto(buildingLotDao.save(e));
             }
-            case NonBuildingLotCreateDTO d -> {
+            case NonBuildingLotRequest d -> {
                 NonBuildingLot e = new NonBuildingLot();
                 mapCommon(e, d);
                 e.setCropType(d.getCropType());
@@ -79,9 +79,9 @@ public class RealEstateService {
         return results;
     }
 
-    public RealEstateDto update(int id, RealEstateCreateDto dto) {
+    public RealEstateDto update(int id, RealEstateCreateRequest dto) {
         return switch (dto) {
-            case ApartmentCreateDTO d -> {
+            case ApartmentRequest d -> {
                 Apartment e = new Apartment();
                 mapCommon(e, d);
                 e.setId(id);
@@ -89,7 +89,7 @@ public class RealEstateService {
                 e.setHasElevator(d.getHasElevator());
                 yield toDto(apartmentDao.update(e));
             }
-            case VillaCreateDTO d -> {
+            case VillaCreateRequest d -> {
                 Villa e = new Villa();
                 mapCommon(e, d);
                 e.setId(id);
@@ -98,7 +98,7 @@ public class RealEstateService {
                 e.setNumberOfFloors(d.getNumberOfFloors());
                 yield toDto(villaDao.update(e));
             }
-            case GarageCreateDTO d -> {
+            case GarageRequest d -> {
                 Garage e = new Garage();
                 mapCommon(e, d);
                 e.setId(id);
@@ -107,7 +107,7 @@ public class RealEstateService {
                 e.setIsElectric(d.getIsElectric());
                 yield toDto(garageDao.update(e));
             }
-            case BuildingLotCreateDTO d -> {
+            case BuildingLotRequest d -> {
                 BuildingLot e = new BuildingLot();
                 mapCommon(e, d);
                 e.setId(id);
@@ -115,7 +115,7 @@ public class RealEstateService {
                 e.setPlannedUse(d.getPlannedUse());
                 yield toDto(buildingLotDao.update(e));
             }
-            case NonBuildingLotCreateDTO d -> {
+            case NonBuildingLotRequest d -> {
                 NonBuildingLot e = new NonBuildingLot();
                 mapCommon(e, d);
                 e.setId(id);
@@ -144,7 +144,7 @@ public class RealEstateService {
         return toDto(realEstate.get());
     }
 
-    private void mapCommon(RealEstate entity, RealEstateCreateDto dto) {
+    private void mapCommon(RealEstate entity, RealEstateCreateRequest dto) {
         entity.setType(dto.getType());
         entity.setTitle(dto.getTitle());
         entity.setNumberOfRooms(dto.getNumberOfRooms());

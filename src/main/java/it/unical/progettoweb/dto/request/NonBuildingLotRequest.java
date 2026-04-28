@@ -1,10 +1,10 @@
-package it.unical.progettoweb.dto.create;
+package it.unical.progettoweb.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class NonBuildingLotCreateDTO extends RealEstateCreateDto {
+public class NonBuildingLotRequest extends RealEstateCreateRequest {
     private String cropType;
 }
