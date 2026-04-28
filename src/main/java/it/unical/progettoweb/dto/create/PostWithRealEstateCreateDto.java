@@ -6,11 +6,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PostCreateDto {
-
+public class PostWithRealEstateCreateDto {
     private String title;
     private String description;
     private double currentPrice;
-    private int realEstateId;
     private List<Photo> photoUrls;
+
+    private RealEstateCreateDto realEstate;
 }

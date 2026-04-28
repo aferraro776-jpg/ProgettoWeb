@@ -18,10 +18,11 @@ public class JwtUtil {
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
     // genera il token con email e ruolo ("USER", "SELLER", "ADMIN")
-    public String generateToken(String email, String ruolo) {
+    public String generateToken(String email, String ruolo,int id) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("ruolo", ruolo)
+                .claim("id", id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -52,5 +53,9 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public int extractUserId(String token) {
+        return parseClaims(token).get("id", Integer.class);
     }
 }
