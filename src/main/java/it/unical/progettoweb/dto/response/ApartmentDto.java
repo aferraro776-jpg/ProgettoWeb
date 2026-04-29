@@ -1,25 +1,24 @@
 package it.unical.progettoweb.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class ApartmentDto {
-    private int id;
-    private String title;
-    private int numberOfRooms;
-    private String description;
-    private double squareMetres;
-    private double latit;
-    private double longit;
-    private String address;
-    private LocalDateTime createdAt;
-    private String type;
+@EqualsAndHashCode(callSuper = true)
+public class ApartmentDto extends RealEstateDto {
     private Integer floor;
     private Boolean hasElevator;
+
+    public ApartmentDto(int id, String title, int numberOfRooms, String description,
+                        double squareMetres, double latit, double longit, String address,
+                        LocalDateTime createdAt, String type,
+                        Integer floor, Boolean hasElevator) {
+        super(id, title, numberOfRooms, description, squareMetres, latit, longit, address, createdAt, type);
+        this.floor = floor;
+        this.hasElevator = hasElevator;
+    }
 }

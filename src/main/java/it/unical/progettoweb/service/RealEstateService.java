@@ -24,7 +24,7 @@ public class RealEstateService {
     private final RealEstateDaoImpl realEstateDao;
     private final Random random = new Random();
 
-    public Object save(RealEstateRequest dto) {
+    public RealEstateDto save(RealEstateRequest dto) {
         return switch (dto) {
             case ApartmentRequest d -> {
                 Apartment e = new Apartment();
@@ -147,7 +147,7 @@ public class RealEstateService {
         entity.setAddress(dto.getAddress());
     }
 
-    private Object toDto(RealEstate e) {
+    private RealEstateDto toDto(RealEstate e) {
         return switch (e) {
             case Apartment a -> new ApartmentDto(
                     a.getId(), a.getTitle(), a.getNumberOfRooms(), a.getDescription(),

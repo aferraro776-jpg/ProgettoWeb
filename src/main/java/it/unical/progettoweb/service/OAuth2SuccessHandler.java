@@ -1,5 +1,6 @@
 package it.unical.progettoweb.service;
 
+import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
 import it.unical.progettoweb.model.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import java.util.Random;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final UserDao userDao;
+    private final SellerDao sellerDao;
     private final JwtUtil jwtUtil;
 
     @Override
@@ -36,6 +38,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         Optional<User> existing = userDao.findByEmail(email);
         if (existing.isEmpty()) {
+
+            if (sellerDao.findByEmail(email).isPresent()) {
+                getRedirectStrategy().sendRedirect(request, response,
+                        "http://localhost:4200/oauth2/callback?error=email_already_seller");
+                return;
+            }
+
             User newUser = new User();
             newUser.setId(generateUniqueId());
             newUser.setEmail(email);
@@ -48,7 +57,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             userDao.save(newUser);
         }
 
-        // Recupera l'utente (esistente o appena salvato) per prendere l'id
         User user = userDao.findByEmail(email).orElseThrow();
         String jwt = jwtUtil.generateToken(email, "USER", user.getId());
 
@@ -56,12 +64,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
-    // genera un id tra 10000 e 99999 verificando che non esista già
     private int generateUniqueId() {
         int id;
         do {
             id = new Random().nextInt(89999) + 10000;
-        } while (userDao.get(id).isPresent()); // riprova finché l'id è libero
+        } while (userDao.get(id).isPresent());
         return id;
     }
 }

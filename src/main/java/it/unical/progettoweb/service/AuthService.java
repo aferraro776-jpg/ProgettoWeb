@@ -93,8 +93,8 @@ public class AuthService {
 
     // ── registrazione acquirente (con verifica OTP)
     public void registraUser(UserRequest dto) {
-        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
-            throw new IllegalArgumentException("OTP non valido o scaduto.");
+//        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+//            throw new IllegalArgumentException("OTP non valido o scaduto.");
 
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
@@ -116,6 +116,9 @@ public class AuthService {
 
     // ── registrazione venditore
     public void registraSeller(SellerRequest dto) {
+//        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+//            throw new IllegalArgumentException("OTP non valido o scaduto.");
+
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
         validaPassword(dto.getPassword());
@@ -205,7 +208,7 @@ public class AuthService {
 
     // ── invia OTP per la registrazione
     public void inviaOtpRegistrazione(String email) {
-        if (userDao.findByEmail(email).isPresent())
+        if (userDao.findByEmail(email).isPresent() || sellerDao.existsByEmail(email))
             throw new IllegalArgumentException("Email già registrata.");
         String code = otpService.generateOtp(email);
         emailService.sendOtp(email, code, "Registrazione");
@@ -213,7 +216,7 @@ public class AuthService {
 
     // ── invia OTP per il recupero password
     public void inviaOtpRecuperoPassword(String email) {
-        if (userDao.findByEmail(email).isEmpty())
+        if (userDao.findByEmail(email).isEmpty()  || sellerDao.existsByEmail(email))
             throw new IllegalArgumentException("Email non trovata.");
         String code = otpService.generateOtp(email);
         emailService.sendOtp(email, code, "Recupero password");
@@ -224,11 +227,19 @@ public class AuthService {
         if (!otpService.verifyOtp(email, otp))
             throw new IllegalArgumentException("OTP non valido o scaduto.");
 
-        User user = userDao.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato."));
-
         validaPassword(newPassword);
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userDao.update(user);
+
+        Optional<User> userOpt = userDao.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userDao.update(user);
+            return;
+        }
+
+        Seller seller = sellerDao.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato."));
+        seller.setPassword(passwordEncoder.encode(newPassword));
+        sellerDao.update(seller);
     }
 }

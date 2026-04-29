@@ -1,27 +1,27 @@
 package it.unical.progettoweb.dto.response;
 
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class GarageDto {
-    private int id;
-    private String title;
-    private int numberOfRooms;
-    private String description;
-    private double squareMetres;
-    private double latit;
-    private double longit;
-    private String address;
-    private LocalDateTime createdAt;
-    private String type;
+@EqualsAndHashCode(callSuper = true)
+public class GarageDto extends RealEstateDto {
     private Double width;
     private Double height;
     private Boolean isElectric;
+
+    public GarageDto(int id, String title, int numberOfRooms, String description,
+                     double squareMetres, double latit, double longit, String address,
+                     LocalDateTime createdAt, String type,
+                     Double width, Double height, Boolean isElectric) {
+        super(id, title, numberOfRooms, description, squareMetres, latit, longit, address, createdAt, type);
+        this.width = width;
+        this.height = height;
+        this.isElectric = isElectric;
+    }
 }
+

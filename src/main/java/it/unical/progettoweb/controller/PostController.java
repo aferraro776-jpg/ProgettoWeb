@@ -1,8 +1,8 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.create.PostCreateDto;
-import it.unical.progettoweb.dto.create.PostWithRealEstateCreateDto;
-import it.unical.progettoweb.dto.send.PostDto;
+import it.unical.progettoweb.dto.request.PostRequest;
+import it.unical.progettoweb.dto.request.PostWithRealEstateCreateDto;
+import it.unical.progettoweb.dto.response.PostDto;
 import it.unical.progettoweb.service.JwtUtil;
 import it.unical.progettoweb.service.PostService;
 import lombok.AllArgsConstructor;
@@ -58,7 +58,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<PostDto> create(
-            @RequestBody PostCreateDto post,
+            @RequestBody PostRequest post,
             @RequestHeader("Authorization") String authHeader) {
         int sellerId = jwtUtil.extractUserId(authHeader.substring(7));
         PostDto savedPost = postService.save(post, sellerId);
@@ -66,7 +66,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostCreateDto postDto) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostRequest postDto) {
         try {
             PostDto updated = postService.update(id, postDto);
             return ResponseEntity.ok(updated);

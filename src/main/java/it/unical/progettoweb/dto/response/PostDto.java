@@ -4,7 +4,6 @@ import it.unical.progettoweb.model.Photo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,4 +21,5 @@ public class PostDto {
     private int sellerId;
     private int realEstateId;
     private List<Photo> photoUrls;
+
 }

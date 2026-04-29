@@ -63,44 +63,33 @@ public class AuthController {
         return ResponseEntity.ok(authService.getMe(authHeader));
     }
 
-    @PostMapping("/register/request-otp")
-    public ResponseEntity<String> requestRegistrationOtp(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        if (userDao.findByEmail(email).isPresent())
-            return ResponseEntity.badRequest().body("Email già registrata.");
-        String code = otpService.generateOtp(email);
-        emailService.sendOtp(email, code, "Registrazione");
-        return ResponseEntity.ok("OTP inviato.");
-    }
+//    @PostMapping("/register/request-otp")
+//    public ResponseEntity<String> requestRegistrationOtp(@RequestBody Map<String, String> body) {
+//        String email = body.get("email");
+//        if (userDao.findByEmail(email).isPresent())
+//            return ResponseEntity.badRequest().body("Email già registrata.");
+//        String code = otpService.generateOtp(email);
+//        emailService.sendOtp(email, code, "Registrazione");
+//        return ResponseEntity.ok("OTP inviato.");
+//    }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        if (userDao.findByEmail(email).isEmpty())
-            return ResponseEntity.badRequest().body("Email non trovata.");
-        String code = otpService.generateOtp(email);
-        emailService.sendOtp(email, code, "Recupero password");
-        return ResponseEntity.ok("OTP inviato.");
+        try {
+            authService.inviaOtpRecuperoPassword(body.get("email"));
+            return ResponseEntity.ok("OTP inviato.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> body) {
-        String email   = body.get("email");
-        String otp     = body.get("otp");
-        String newPass = body.get("newPassword");
-
-        if (!otpService.verifyOtp(email, otp))
-            return ResponseEntity.badRequest().body("OTP non valido o scaduto.");
-
-        User user = userDao.findByEmail(email)
-                .orElse(null);
-
-        if (user == null)
-            return ResponseEntity.badRequest().body("Utente non trovato.");
-
-        user.setPassword(passwordEncoder.encode(newPass));
-        userDao.update(user);
-
-        return ResponseEntity.ok("Password aggiornata.");
+        try {
+            authService.resetPassword(body.get("email"), body.get("otp"), body.get("newPassword"));
+            return ResponseEntity.ok("Password aggiornata.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
