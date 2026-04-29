@@ -1,4 +1,4 @@
-package it.unical.progettoweb.dto.request;
+package it.unical.progettoweb.dto.create;
 
 import it.unical.progettoweb.model.Photo;
 import lombok.Data;
@@ -6,11 +6,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PostRequest {
-
+public class PostWithRealEstateCreateDto {
     private String title;
     private String description;
     private double currentPrice;
-    private int realEstateId;
     private List<Photo> photoUrls;
+
+    private RealEstateCreateDto realEstate;
 }

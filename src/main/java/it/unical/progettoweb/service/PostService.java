@@ -1,10 +1,15 @@
 package it.unical.progettoweb.service;
 
 import it.unical.progettoweb.dao.PostDao;
-import it.unical.progettoweb.dto.request.PostRequest;
-import it.unical.progettoweb.dto.response.PostDto;
+import it.unical.progettoweb.dto.create.PostCreateDto;
+import it.unical.progettoweb.dto.create.PostWithRealEstateCreateDto;
+import it.unical.progettoweb.dto.send.PostDto;
+import it.unical.progettoweb.dto.send.RealEstateDto;
+import it.unical.progettoweb.model.Photo;
 import it.unical.progettoweb.model.Post;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,23 +18,46 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
+@AllArgsConstructor
 public class PostService {
     private final PostDao postDao;
+    private final RealEstateService realEstateService;
 
-    public PostService(PostDao postDao) {
-        this.postDao = postDao;
+    public PostDto save(PostCreateDto postDto, int sellerId) {
+        return buildAndSavePost(
+                postDto.getTitle(),
+                postDto.getDescription(),
+                postDto.getPhotoUrls(),
+                postDto.getCurrentPrice(),
+                postDto.getRealEstateId(),
+                sellerId
+        );
     }
 
-    public PostDto save(PostRequest postDto) {
+    @Transactional
+    public PostDto saveWithRealEstate(PostWithRealEstateCreateDto dto, int sellerId) {
+        RealEstateDto createdRealEstate = realEstateService.save(dto.getRealEstate());
+        return buildAndSavePost(
+                dto.getTitle(),
+                dto.getDescription(),
+                dto.getPhotoUrls(),
+                dto.getCurrentPrice(),
+                createdRealEstate.getId(),
+                sellerId
+        );
+    }
+
+    private PostDto buildAndSavePost(String title, String description, List<Photo> photos,
+                                     double currentPrice, int realEstateId, int sellerId) {
         Post post = new Post();
-        post.setTitle(postDto.getTitle());
-        post.setDescription(postDto.getDescription());
-        post.setPhotos(postDto.getPhotoUrls());
+        post.setTitle(title);
+        post.setDescription(description);
+        post.setPhotos(photos);
         post.setCreatedAt(LocalDateTime.now());
-        post.setCurrentPrice(postDto.getCurrentPrice());
+        post.setCurrentPrice(currentPrice);
         post.setPreviousPrice(0);
-        post.setSellerId(postDto.getSellerId());
-        post.setRealEstateId(postDto.getRealEstateId());
+        post.setSellerId(sellerId);
+        post.setRealEstateId(realEstateId);
         post.setId(generateUniqueId());
         post = postDao.save(post);
         return toDto(post);
@@ -48,20 +76,16 @@ public class PostService {
 
         existing.setPreviousPrice(existing.getCurrentPrice());
         existing.setCurrentPrice(newPrice);
-        Post saved = postDao.save(existing);
+        Post saved = postDao.update(existing);
         return toDto(saved);
     }
 
     private PostDto toDto(Post post) {
-        return new PostDto(
-                post.getId(), post.getTitle(), post.getDescription(),
-                post.getPreviousPrice(), post.getCurrentPrice(),
-                post.getCreatedAt(), post.getSellerId(), post.getRealEstateId(),
-                post.getPhotos()
-        );
+        return new PostDto(post.getId(), post.getTitle(), post.getDescription(), post.getPreviousPrice(),
+                post.getCurrentPrice(), post.getCreatedAt(), post.getSellerId(), post.getRealEstateId());
     }
 
-    public PostDto update(int id, PostRequest postDto) {
+    public PostDto update(int id, PostCreateDto postDto) {
         Optional<Post> existing = postDao.get(id);
 
         if (existing.isEmpty()) {

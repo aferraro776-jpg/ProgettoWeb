@@ -1,23 +1,25 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.request.PostRequest;
-import it.unical.progettoweb.dto.response.PostDto;
+import it.unical.progettoweb.dto.create.PostCreateDto;
+import it.unical.progettoweb.dto.create.PostWithRealEstateCreateDto;
+import it.unical.progettoweb.dto.send.PostDto;
+import it.unical.progettoweb.service.JwtUtil;
 import it.unical.progettoweb.service.PostService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
+@AllArgsConstructor
 public class PostController {
 
     private final PostService postService;
-
-    public PostController(PostService postService) {
-        this.postService = postService;
-    }
+    private final JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<PostDto>> getAll(
@@ -55,13 +57,16 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostDto> create(@RequestBody PostRequest post) {
-        PostDto savedPost = postService.save(post);
+    public ResponseEntity<PostDto> create(
+            @RequestBody PostCreateDto post,
+            @RequestHeader("Authorization") String authHeader) {
+        int sellerId = jwtUtil.extractUserId(authHeader.substring(7));
+        PostDto savedPost = postService.save(post, sellerId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostRequest postDto) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostCreateDto postDto) {
         try {
             PostDto updated = postService.update(id, postDto);
             return ResponseEntity.ok(updated);
@@ -73,8 +78,9 @@ public class PostController {
     }
 
     @PatchMapping("/{id}/reduce-price")
-    public ResponseEntity<?> reducePrice(@PathVariable int id, @RequestParam double newPrice) {
+    public ResponseEntity<?> reducePrice(@PathVariable int id, @RequestBody Map<String, Double> body) {
         try {
+            double newPrice = body.get("newPrice");
             PostDto updated = postService.reducePrice(id, newPrice);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
@@ -92,5 +98,14 @@ public class PostController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/with-realestate")
+    public ResponseEntity<PostDto> createWithRealEstate(
+            @RequestBody PostWithRealEstateCreateDto dto,
+            @RequestHeader("Authorization") String authHeader) {
+        int sellerId = jwtUtil.extractUserId(authHeader.substring(7));
+        PostDto savedPost = postService.saveWithRealEstate(dto, sellerId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
     }
 }
