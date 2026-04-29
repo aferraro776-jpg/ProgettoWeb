@@ -1,5 +1,3 @@
-
-
 INSERT INTO public.admins (id, name, surname, email, password)
 VALUES (
            10001,
