@@ -59,7 +59,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDto> me(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> me(@RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(authService.getMe(authHeader));
     }
 
