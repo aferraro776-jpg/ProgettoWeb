@@ -5,6 +5,6 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class NonBuildingLotRequest extends RealEstateCreateRequest {
+public class NonBuildingLotRequest extends RealEstateRequest {
     private String cropType;
 }

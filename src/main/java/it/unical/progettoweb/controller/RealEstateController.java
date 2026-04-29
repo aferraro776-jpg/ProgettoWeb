@@ -1,6 +1,6 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.request.RealEstateCreateRequest;
+import it.unical.progettoweb.dto.request.RealEstateRequest;
 import it.unical.progettoweb.dto.response.RealEstateDto;
 import it.unical.progettoweb.service.RealEstateService;
 import org.springframework.http.HttpStatus;
@@ -34,13 +34,13 @@ public class RealEstateController {
     }
 
     @PostMapping
-    public ResponseEntity<RealEstateDto> create(@RequestBody RealEstateCreateRequest realEstate){
+    public ResponseEntity<RealEstateDto> create(@RequestBody RealEstateRequest realEstate){
         RealEstateDto savedRealEstate = realEstateService.save(realEstate);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRealEstate);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody RealEstateCreateRequest realEstate){
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody RealEstateRequest realEstate){
         try {
             RealEstateDto updated = realEstateService.update(id, realEstate);
             return ResponseEntity.ok(updated);

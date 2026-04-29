@@ -1,6 +1,6 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.request.PostCreateDto;
+import it.unical.progettoweb.dto.request.PostRequest;
 import it.unical.progettoweb.dto.response.PostDto;
 import it.unical.progettoweb.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -55,13 +55,13 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostDto> create(@RequestBody PostCreateDto post) {
+    public ResponseEntity<PostDto> create(@RequestBody PostRequest post) {
         PostDto savedPost = postService.save(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostCreateDto postDto) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostRequest postDto) {
         try {
             PostDto updated = postService.update(id, postDto);
             return ResponseEntity.ok(updated);

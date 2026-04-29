@@ -7,6 +7,8 @@ import it.unical.progettoweb.dao.impl.UserDao;
 import it.unical.progettoweb.dto.response.UserDto;
 import it.unical.progettoweb.dto.request.SellerRequest;
 import it.unical.progettoweb.dto.request.UserRequest;
+import it.unical.progettoweb.dto.response.SellerDto;
+import it.unical.progettoweb.dto.response.AdminDto;
 import it.unical.progettoweb.model.Admin;
 import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.model.User;
@@ -170,24 +172,35 @@ public class AuthService {
     }
 
     // ── restituisce il profilo dell'utente autenticato dal token JWT
-    public UserDto getMe(String authHeader) {
+    public Object getMe(String authHeader) {
         String token = authHeader.substring(7);
 
         if (!jwtUtil.isTokenValid(token))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token non valido o scaduto.");
 
         String email = jwtUtil.extractEmail(token);
+        String ruolo = jwtUtil.extractRuolo(token);
 
-        return userDao.findByEmail(email)
-                .map(user -> new UserDto(
-                        user.getId(),
-                        user.getName(),
-                        user.getSurname(),
-                        user.getEmail(),
-                        user.getBirthDate(),
-                        user.getAuthProvider()
-                ))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
+        return switch (ruolo) {
+            case "USER" -> userDao.findByEmail(email)
+                    .map(u -> new UserDto(
+                            u.getId(), u.getName(), u.getSurname(),
+                            u.getEmail(), u.getBirthDate(), u.getAuthProvider()))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
+
+            case "SELLER" -> sellerDao.findByEmail(email)
+                    .map(s -> new SellerDto(
+                            s.getId(), s.getName(), s.getSurname(),
+                            s.getEmail(), s.getVatNumber(), s.getBirthDate()))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venditore non trovato."));
+
+            case "ADMIN" -> adminDao.findByEmail(email)
+                    .map(a -> new AdminDto(
+                            a.getId(), a.getName(), a.getSurname(), a.getEmail()))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin non trovato."));
+
+            default -> throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Ruolo non riconosciuto.");
+        };
     }
 
     // ── invia OTP per la registrazione

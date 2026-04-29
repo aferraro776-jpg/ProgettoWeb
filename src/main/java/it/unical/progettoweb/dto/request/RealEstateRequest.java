@@ -7,13 +7,13 @@ import lombok.Data;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ApartmentRequest.class,       name = "APARTMENT"),
-        @JsonSubTypes.Type(value = VillaCreateRequest.class,           name = "VILLA"),
+        @JsonSubTypes.Type(value = VillaRequest.class,           name = "VILLA"),
         @JsonSubTypes.Type(value = GarageRequest.class,          name = "GARAGE"),
         @JsonSubTypes.Type(value = BuildingLotRequest.class,     name = "BUILDING_LOT"),
         @JsonSubTypes.Type(value = NonBuildingLotRequest.class,  name = "NON_BUILDING_LOT")
 })
 @Data
-public abstract class RealEstateCreateRequest {
+public abstract class RealEstateRequest {
     private String type;
     private String title;
     private int numberOfRooms;

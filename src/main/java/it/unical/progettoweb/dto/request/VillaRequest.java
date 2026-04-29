@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class VillaCreateRequest extends RealEstateCreateRequest {
+public class VillaRequest extends RealEstateRequest {
     private Boolean hasGarden;
     private Boolean hasPool;
     private Integer numberOfFloors;

@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GarageRequest extends RealEstateCreateRequest {
+public class GarageRequest extends RealEstateRequest {
     private Double width;
     private Double height;
     private Boolean isElectric;

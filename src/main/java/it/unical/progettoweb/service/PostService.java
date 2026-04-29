@@ -1,7 +1,7 @@
 package it.unical.progettoweb.service;
 
 import it.unical.progettoweb.dao.PostDao;
-import it.unical.progettoweb.dto.request.PostCreateDto;
+import it.unical.progettoweb.dto.request.PostRequest;
 import it.unical.progettoweb.dto.response.PostDto;
 import it.unical.progettoweb.model.Post;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class PostService {
         this.postDao = postDao;
     }
 
-    public PostDto save(PostCreateDto postDto) {
+    public PostDto save(PostRequest postDto) {
         Post post = new Post();
         post.setTitle(postDto.getTitle());
         post.setDescription(postDto.getDescription());
@@ -53,11 +53,15 @@ public class PostService {
     }
 
     private PostDto toDto(Post post) {
-        return new PostDto(post.getId(), post.getTitle(), post.getDescription(), post.getPreviousPrice(),
-                post.getCurrentPrice(), post.getCreatedAt(), post.getSellerId(), post.getRealEstateId());
+        return new PostDto(
+                post.getId(), post.getTitle(), post.getDescription(),
+                post.getPreviousPrice(), post.getCurrentPrice(),
+                post.getCreatedAt(), post.getSellerId(), post.getRealEstateId(),
+                post.getPhotos()
+        );
     }
 
-    public PostDto update(int id, PostCreateDto postDto) {
+    public PostDto update(int id, PostRequest postDto) {
         Optional<Post> existing = postDao.get(id);
 
         if (existing.isEmpty()) {
