@@ -19,4 +19,5 @@ public class SellerRequest {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    private String otp;
 }
