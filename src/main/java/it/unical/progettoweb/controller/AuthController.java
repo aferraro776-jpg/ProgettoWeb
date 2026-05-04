@@ -63,15 +63,15 @@ public class AuthController {
         return ResponseEntity.ok(authService.getMe(authHeader));
     }
 
-//    @PostMapping("/register/request-otp")
-//    public ResponseEntity<String> requestRegistrationOtp(@RequestBody Map<String, String> body) {
-//        String email = body.get("email");
-//        if (userDao.findByEmail(email).isPresent())
-//            return ResponseEntity.badRequest().body("Email già registrata.");
-//        String code = otpService.generateOtp(email);
-//        emailService.sendOtp(email, code, "Registrazione");
-//        return ResponseEntity.ok("OTP inviato.");
-//    }
+    @PostMapping("/register/request-otp")
+    public ResponseEntity<String> requestRegistrationOtp(@RequestBody Map<String, String> body) {
+        try {
+            authService.inviaOtpRegistrazione(body.get("email"));
+            return ResponseEntity.ok("OTP inviato.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {

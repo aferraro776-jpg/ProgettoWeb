@@ -11,20 +11,22 @@ public class OtpService {
     private final Map<String, OtpEntry> otpStore = new ConcurrentHashMap<>();
 
     public String generateOtp(String email) {
+        String normalizedEmail = email.trim().toLowerCase();
         String code = String.format("%06d", new Random().nextInt(999999));
-        otpStore.put(email, new OtpEntry(code, LocalDateTime.now().plusMinutes(10)));
+        otpStore.put(normalizedEmail, new OtpEntry(code, LocalDateTime.now().plusMinutes(10)));
         return code;
     }
 
     public boolean verifyOtp(String email, String code) {
-        OtpEntry entry = otpStore.get(email);
+        String normalizedEmail = email.trim().toLowerCase();
+        OtpEntry entry = otpStore.get(normalizedEmail);
         if (entry == null) return false;
         if (LocalDateTime.now().isAfter(entry.expiry())) {
-            otpStore.remove(email);
+            otpStore.remove(normalizedEmail);
             return false;
         }
-        boolean valid = entry.code().equals(code);
-        if (valid) otpStore.remove(email);
+        boolean valid = entry.code().equals(code.trim()); // trim anche sull'OTP
+        if (valid) otpStore.remove(normalizedEmail);
         return valid;
     }
 

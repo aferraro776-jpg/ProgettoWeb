@@ -93,8 +93,8 @@ public class AuthService {
 
     // ── registrazione acquirente (con verifica OTP)
     public void registraUser(UserRequest dto) {
-//        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
-//            throw new IllegalArgumentException("OTP non valido o scaduto.");
+        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+         throw new IllegalArgumentException("OTP non valido o scaduto.");
 
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
@@ -116,8 +116,8 @@ public class AuthService {
 
     // ── registrazione venditore
     public void registraSeller(SellerRequest dto) {
-//        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
-//            throw new IllegalArgumentException("OTP non valido o scaduto.");
+        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+            throw new IllegalArgumentException("OTP non valido o scaduto.");
 
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
@@ -216,7 +216,7 @@ public class AuthService {
 
     // ── invia OTP per il recupero password
     public void inviaOtpRecuperoPassword(String email) {
-        if (userDao.findByEmail(email).isEmpty()  || sellerDao.existsByEmail(email))
+        if (userDao.findByEmail(email).isEmpty() && sellerDao.existsByEmail(email))
             throw new IllegalArgumentException("Email non trovata.");
         String code = otpService.generateOtp(email);
         emailService.sendOtp(email, code, "Recupero password");
