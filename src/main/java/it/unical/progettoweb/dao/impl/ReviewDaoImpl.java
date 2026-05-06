@@ -25,43 +25,44 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public Review save(Review review) {
         jdbcTemplate.update(
-                "INSERT INTO reviews (id, title, description, rating, date, id_user, id_real_estate) " +
+                "INSERT INTO reviews (id, title, description, rating, created_at, id_user, id_post) " +
                         "VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?)",
                 review.getId(),
                 review.getTitle(),
                 review.getDescription(),
                 review.getRating(),
                 review.getUserId(),
-                review.getRealEstateId()
+                review.getPostId()
         );
         return review;
     }
-
     @Override
     public Optional<Review> get(Integer id) {
         try {
-            return Optional.ofNullable(
-                    jdbcTemplate.queryForObject("SELECT * FROM reviews WHERE id = ?", rowMapper, id)
+            Review review = jdbcTemplate.queryForObject(
+                    "SELECT * FROM reviews WHERE id = ?", rowMapper, id
             );
+            return Optional.ofNullable(review);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
+
     @Override
     public List<Review> getAll() {
-        return jdbcTemplate.query("SELECT * FROM reviews ORDER BY date DESC", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM reviews ORDER BY created_at DESC", rowMapper);
     }
 
     @Override
     public Review update(Review review) {
         jdbcTemplate.update(
-                "UPDATE reviews SET title=?, description=?, rating=?, id_user=?, id_real_estate=? WHERE id=?",
+                "UPDATE reviews SET title=?, description=?, rating=?, id_user=?, id_post=? WHERE id=?",
                 review.getTitle(),
                 review.getDescription(),
                 review.getRating(),
                 review.getUserId(),
-                review.getRealEstateId(),
+                review.getPostId(),
                 review.getId()
         );
         return review;
@@ -73,27 +74,36 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     @Override
-    public List<Review> findByRealEstateId(int realEstateId) {
+    public List<Review> findByPostId(int postId) {
         return jdbcTemplate.query(
-                "SELECT * FROM reviews WHERE id_real_estate = ? ORDER BY date DESC",
-                rowMapper, realEstateId
+                "SELECT * FROM reviews WHERE id_post = ? ORDER BY created_at DESC",
+                rowMapper, postId
         );
     }
 
     @Override
     public List<Review> findByUserId(int userId) {
         return jdbcTemplate.query(
-                "SELECT * FROM reviews WHERE id_user = ? ORDER BY date DESC",
+                "SELECT * FROM reviews WHERE id_user = ? ORDER BY created_at DESC",
                 rowMapper, userId
         );
     }
 
     @Override
-    public Double getAverageRatingForRealEstate(int realEstateId) {
+    public Double getAverageRatingForPost(int postId) {
         Double avg = jdbcTemplate.queryForObject(
-                "SELECT AVG(rating) FROM reviews WHERE id_real_estate = ?",
-                Double.class, realEstateId
+                "SELECT AVG(rating) FROM reviews WHERE id_post = ?",
+                Double.class, postId
         );
         return avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
+    }
+
+    @Override
+    public boolean existByUserIdAndPostId(int userId, int postId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reviews WHERE id_user = ? AND id_post = ?",
+                Integer.class, userId, postId
+        );
+        return count != null && count > 0;
     }
 }

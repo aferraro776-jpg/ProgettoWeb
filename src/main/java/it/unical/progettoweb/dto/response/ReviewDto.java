@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -14,7 +15,7 @@ public class ReviewDto {
     private String title;
     private String description;
     private int rating;
-    private Date date;
+    private LocalDateTime date;
     private int userId;
-    private int realEstateId;
+    private int postId;
 }
