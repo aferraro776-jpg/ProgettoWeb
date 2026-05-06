@@ -204,7 +204,7 @@ public class AuthService {
     }
 
     public void inviaOtpRecuperoPassword(String email) {
-        if (userDao.findByEmail(email).isEmpty() && sellerDao.existsByEmail(email))
+        if (userDao.findByEmail(email).isEmpty() && sellerDao.findByEmail(email).isEmpty())
             throw new IllegalArgumentException("Email non trovata.");
         String code = otpService.generateOtp(email);
         emailService.sendOtp(email, code, "Recupero password");
