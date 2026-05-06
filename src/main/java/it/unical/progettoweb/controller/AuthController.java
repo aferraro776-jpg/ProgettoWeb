@@ -27,11 +27,6 @@ public class AuthController {
     private final EmailService emailService;
     private final UserDao userDao;
 
-    @GetMapping("/hash")
-    public String hash() {
-        return passwordEncoder.encode("Admin123!");
-    }
-
     @PostMapping("/register/user")
     public ResponseEntity<String> registerUser(@RequestBody UserRequest dto) {
         try {
