@@ -31,7 +31,7 @@ public class PostProxy extends Post {
 
     public List<Review> getReviews() {
         if (!isReviewsCaches && super.getId() != null) {
-            List<Review> reviewsChaches = reviewDao.findByRealEstateId(getRealEstateId());
+            List<Review> reviewsChaches = reviewDao.findByPostId(getRealEstateId());
             super.setReviews(reviewsChaches);
             isReviewsCaches = true;
         }
