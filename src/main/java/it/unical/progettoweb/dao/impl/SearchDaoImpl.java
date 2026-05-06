@@ -30,7 +30,6 @@ public class SearchDaoImpl implements SearchDao {
         dto.setRealEstateId(rs.getInt("realEstateId"));
         dto.setRealEstateType(rs.getString("realEstateType"));
         dto.setSquareMeters(rs.getDouble("squareMeters"));
-        dto.setCity(rs.getString("city"));
         dto.setAddress(rs.getString("address"));
         return dto;
     };
@@ -39,7 +38,6 @@ public class SearchDaoImpl implements SearchDao {
     public List<PostSummaryDto> search(
             String transactionType,
             String realEstateType,
-            String city,
             Double minPrice,
             Double maxPrice,
             String sortBy,
@@ -57,7 +55,6 @@ public class SearchDaoImpl implements SearchDao {
                     r.id                    AS "realEstateId",
                     r.type                  AS "realEstateType",
                     r.square_meters         AS "squareMeters",
-                    r.city                  AS "city",
                     r.address               AS "address"
                 FROM posts p
                 JOIN "realEstate" r ON p.id_real_estate = r.id
@@ -76,11 +73,6 @@ public class SearchDaoImpl implements SearchDao {
             params.add(realEstateType.toUpperCase());
         }
 
-        if (city != null && !city.isBlank()) {
-            sql.append("AND UPPER(r.city) LIKE ? ");
-            params.add("%" + city.toUpperCase() + "%");
-        }
-
         if (minPrice != null) {
             sql.append("AND p.current_price >= ? ");
             params.add(minPrice);
@@ -93,7 +85,6 @@ public class SearchDaoImpl implements SearchDao {
 
         String orderColumn = switch (sortBy != null ? sortBy.toLowerCase() : "") {
             case "squaremeters" -> "r.square_meters";
-            case "city"         -> "r.city";
             case "title"        -> "p.title";
             default             -> "p.current_price";
         };

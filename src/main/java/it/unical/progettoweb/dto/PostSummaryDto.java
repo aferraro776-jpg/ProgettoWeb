@@ -17,7 +17,6 @@ public class PostSummaryDto {
     private int realEstateId;
     private String realEstateType;
     private double squareMeters;
-    private String city;
     private String address;
 }
 

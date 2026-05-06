@@ -26,15 +26,13 @@ public class SearchController {
     public ResponseEntity<List<PostSummaryDto>> search(
             @RequestParam(required = false) String transactionType,
             @RequestParam(required = false) String realEstateType,
-            @RequestParam(required = false) String city,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false, defaultValue = "price") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDir
     ) {
         List<PostSummaryDto> results = searchDao.search(
-                transactionType, realEstateType, city,
-                minPrice, maxPrice, sortBy, sortDir
+                transactionType, realEstateType, minPrice, maxPrice, sortBy, sortDir
         );
         return ResponseEntity.ok(results);
     }
