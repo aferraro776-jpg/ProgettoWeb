@@ -50,17 +50,17 @@ public class SearchDaoImpl implements SearchDao {
                     p.id                    AS "postId",
                     p.title                 AS "title",
                     p.description           AS "description",
-                    p.currentprice          AS "currentPrice",
-                    p.previousprice         AS "previousPrice",
+                    p.current_price         AS "currentPrice",
+                    p.previous_price        AS "previousPrice",
                     p."transactionType"     AS "transactionType",
                     p."isAuction"           AS "isAuction",
                     r.id                    AS "realEstateId",
                     r.type                  AS "realEstateType",
-                    r.squaremeters          AS "squareMeters",
+                    r.square_meters         AS "squareMeters",
                     r.city                  AS "city",
                     r.address               AS "address"
                 FROM posts p
-                JOIN "realEstate" r ON p.idrealestate = r.id
+                JOIN "realEstate" r ON p.id_real_estate = r.id
                 WHERE 1=1
                 """);
 
@@ -82,20 +82,20 @@ public class SearchDaoImpl implements SearchDao {
         }
 
         if (minPrice != null) {
-            sql.append("AND p.currentprice >= ? ");
+            sql.append("AND p.current_price >= ? ");
             params.add(minPrice);
         }
 
         if (maxPrice != null) {
-            sql.append("AND p.currentprice <= ? ");
+            sql.append("AND p.current_price <= ? ");
             params.add(maxPrice);
         }
 
         String orderColumn = switch (sortBy != null ? sortBy.toLowerCase() : "") {
-            case "squaremeters" -> "r.squaremeters";
+            case "squaremeters" -> "r.square_meters";
             case "city"         -> "r.city";
             case "title"        -> "p.title";
-            default             -> "p.currentprice";
+            default             -> "p.current_price";
         };
 
         String direction = "desc".equalsIgnoreCase(sortDir) ? "DESC" : "ASC";
