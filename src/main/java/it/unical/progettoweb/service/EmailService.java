@@ -19,6 +19,16 @@ public class EmailService {
         mailSender.send(msg);
     }
 
+    public void sendAuctionWon(String to, String postTitle, double amount) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(to);
+        msg.setSubject("Hai vinto l'asta - " + postTitle);
+        msg.setText("Congratulazioni! Hai vinto l'asta per l'immobile \"" + postTitle +
+                "\" con un'offerta di € " + String.format("%.2f", amount) + ".\n" +
+                "Il venditore ti contatterà a breve.");
+        mailSender.send(msg);
+    }
+
     public void sendContactEmail(
             String toSellerEmail,
             String senderName,
