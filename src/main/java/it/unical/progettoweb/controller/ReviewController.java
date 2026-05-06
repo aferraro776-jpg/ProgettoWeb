@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/review")
+@RequestMapping("/api/reviews")
 @AllArgsConstructor
-public class ReviewControllere {
+public class ReviewController {
 
     private final ReviewsService reviewsService;
     private final JwtUtil jwtUtil;
