@@ -4,21 +4,30 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "progettoweb2025-chiave-segreta-molto-lunga-e-sicura-1234567890";
+    @Value("${jwt.secret}")
+    private String secret;
+
     private static final long EXPIRATION_MS = 86400000L;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private Key key;
 
-    // genera il token con email e ruolo ("USER", "SELLER", "ADMIN")
-    public String generateToken(String email, String ruolo,int id) {
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
+    }
+
+    public String generateToken(String email, String ruolo, int id) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("ruolo", ruolo)
@@ -33,7 +42,6 @@ public class JwtUtil {
         return parseClaims(token).getSubject();
     }
 
-    // estrae il ruolo dal token
     public String extractRuolo(String token) {
         return parseClaims(token).get("ruolo", String.class);
     }

@@ -1,6 +1,7 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.send.UserDto;
+import it.unical.progettoweb.dto.response.UserDto;
+import it.unical.progettoweb.dto.request.UserRequest;
 import it.unical.progettoweb.model.User;
 import it.unical.progettoweb.service.JwtUtil;
 import it.unical.progettoweb.service.UserService;
@@ -28,7 +29,6 @@ public class UserController {
             String email = estraiEmail(authHeader);
             User user = userService.getUtenteByEmail(email);
 
-            // costruisce il DTO di risposta, la password non viene mai inclusa
             UserDto dto = new UserDto(
                     user.getId(),
                     user.getName(),
@@ -50,7 +50,7 @@ public class UserController {
     @PutMapping("/me")
     public ResponseEntity<String> aggiornaProfilo(
             @RequestHeader("Authorization") String authHeader,
-            @RequestBody UserDto dto) {
+            @RequestBody UserRequest dto) {
         try {
             String email = estraiEmail(authHeader);
             userService.aggiornaProfilo(email, dto);

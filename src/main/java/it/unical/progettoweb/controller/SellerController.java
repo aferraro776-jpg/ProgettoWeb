@@ -1,6 +1,7 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dto.send.SellerDto;
+import it.unical.progettoweb.dto.response.SellerDto;
+import it.unical.progettoweb.dto.request.SellerRequest;
 import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.service.JwtUtil;
 import it.unical.progettoweb.service.SellerService;
@@ -52,7 +53,7 @@ public class SellerController {
     @PutMapping("/me")
     public ResponseEntity<String> aggiornaProfilo(
             @RequestHeader("Authorization") String authHeader,
-            @RequestBody SellerDto dto) {
+            @RequestBody SellerRequest dto) {
         try {
             String email = estraiEmail(authHeader);
             sellerService.aggiornaProfilo(email, dto);

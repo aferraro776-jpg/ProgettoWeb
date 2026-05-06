@@ -4,8 +4,11 @@ import it.unical.progettoweb.dao.impl.AdminDao;
 import it.unical.progettoweb.dao.impl.BlacklistDao;
 import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
-import it.unical.progettoweb.dto.send.SellerDto;
-import it.unical.progettoweb.dto.send.UserDto;
+import it.unical.progettoweb.dto.response.UserDto;
+import it.unical.progettoweb.dto.request.SellerRequest;
+import it.unical.progettoweb.dto.request.UserRequest;
+import it.unical.progettoweb.dto.response.SellerDto;
+import it.unical.progettoweb.dto.response.AdminDto;
 import it.unical.progettoweb.model.Admin;
 import it.unical.progettoweb.model.Seller;
 import it.unical.progettoweb.model.User;
@@ -29,33 +32,43 @@ public class AuthService {
     private final BlacklistDao blacklistDao;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final OtpService otpService;
+    private final EmailService emailService;
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
     private final Random random = new Random();
 
+    // ── genera id univoco per utenti (10000-99999)
     private int generateUserId() {
         int id;
-        do { id = random.nextInt(89999) + 10000; }
-        while (userDao.get(id).isPresent());
+        do {
+            id = random.nextInt(89999) + 10000;
+        } while (userDao.get(id).isPresent());
         return id;
     }
 
+    // ── genera id univoco per venditori (10000-99999)
     private int generateSellerId() {
         int id;
-        do { id = random.nextInt(89999) + 10000; }
-        while (sellerDao.get(id).isPresent());
+        do {
+            id = random.nextInt(89999) + 10000;
+        } while (sellerDao.get(id).isPresent());
         return id;
     }
 
+    // ── controlla email: formato, blacklist, unicità su tutte le tabelle
     private void validaEmail(String email) {
         if (!Validation.checkEmail(email))
             throw new IllegalArgumentException("Formato email non valido.");
+
         if (blacklistDao.isBanned(email))
             throw new IllegalArgumentException("Email non autorizzata alla registrazione.");
+
         if (userDao.existsByEmail(email) || sellerDao.existsByEmail(email) || adminDao.existsByEmail(email))
             throw new IllegalArgumentException("Email già registrata.");
     }
 
+    // ── controlla nome e cognome
     private void validaGeneralita(String nome, String cognome) {
         if (!Validation.checkNome(nome))
             throw new IllegalArgumentException("Nome non valido (minimo 3 caratteri).");
@@ -63,12 +76,14 @@ public class AuthService {
             throw new IllegalArgumentException("Cognome non valido (minimo 3 caratteri).");
     }
 
+    // ── controlla la password con tutti i criteri di getErrorePassword
     private void validaPassword(String password) {
         String errori = Validation.getErrorePassword(password);
         if (errori != null)
             throw new IllegalArgumentException(errori);
     }
 
+    // ── controlla la data di nascita
     private void validaDataNascita(java.util.Date data) {
         if (data == null)
             throw new IllegalArgumentException("Data di nascita obbligatoria.");
@@ -76,7 +91,11 @@ public class AuthService {
             throw new IllegalArgumentException("Data di nascita non valida.");
     }
 
-    public void registraUser(UserDto dto) {
+    // ── registrazione acquirente (con verifica OTP)
+    public void registraUser(UserRequest dto) {
+        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+         throw new IllegalArgumentException("OTP non valido o scaduto.");
+
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
         validaPassword(dto.getPassword());
@@ -91,10 +110,15 @@ public class AuthService {
         user.setBirthDate(dto.getBirthDate());
         user.setAuthProvider("LOCAL");
         user.setBanned(false);
+
         userDao.save(user);
     }
 
-    public void registraSeller(SellerDto dto) {
+    // ── registrazione venditore
+    public void registraSeller(SellerRequest dto) {
+        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+            throw new IllegalArgumentException("OTP non valido o scaduto.");
+
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
         validaPassword(dto.getPassword());
@@ -102,6 +126,7 @@ public class AuthService {
 
         if (dto.getVatNumber() == null || dto.getVatNumber().isBlank())
             throw new IllegalArgumentException("Partita IVA obbligatoria per i venditori.");
+
         if (sellerDao.existsByVatNumber(dto.getVatNumber()))
             throw new IllegalArgumentException("Partita IVA già registrata.");
 
@@ -114,9 +139,11 @@ public class AuthService {
         seller.setBirthDate(dto.getBirthDate());
         seller.setVatNumber(dto.getVatNumber());
         seller.setBanned(false);
+
         sellerDao.save(seller);
     }
 
+    // ── login — restituisce il token JWT
     public String login(String email, String password) {
         Optional<User> userOpt = userDao.findByEmail(email);
         if (userOpt.isPresent()) {
@@ -147,7 +174,8 @@ public class AuthService {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
     }
 
-    public UserDto getMe(String authHeader) {
+    // ── restituisce il profilo dell'utente autenticato dal token JWT
+    public Object getMe(String authHeader) {
         String token = authHeader.substring(7);
 
         if (!jwtUtil.isTokenValid(token))
@@ -156,36 +184,62 @@ public class AuthService {
         String email = jwtUtil.extractEmail(token);
         String ruolo = jwtUtil.extractRuolo(token);
 
+        return switch (ruolo) {
+            case "USER" -> userDao.findByEmail(email)
+                    .map(u -> new UserDto(
+                            u.getId(), u.getName(), u.getSurname(),
+                            u.getEmail(), u.getBirthDate(), u.getAuthProvider()))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
+
+            case "SELLER" -> sellerDao.findByEmail(email)
+                    .map(s -> new SellerDto(
+                            s.getId(), s.getName(), s.getSurname(),
+                            s.getEmail(), s.getVatNumber(), s.getBirthDate()))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venditore non trovato."));
+
+            case "ADMIN" -> adminDao.findByEmail(email)
+                    .map(a -> new AdminDto(
+                            a.getId(), a.getName(), a.getSurname(), a.getEmail()))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin non trovato."));
+
+            default -> throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Ruolo non riconosciuto.");
+        };
+    }
+
+    // ── invia OTP per la registrazione
+    public void inviaOtpRegistrazione(String email) {
+        if (userDao.findByEmail(email).isPresent() || sellerDao.existsByEmail(email))
+            throw new IllegalArgumentException("Email già registrata.");
+        String code = otpService.generateOtp(email);
+        emailService.sendOtp(email, code, "Registrazione");
+    }
+
+    // ── invia OTP per il recupero password
+    public void inviaOtpRecuperoPassword(String email) {
+        if (userDao.findByEmail(email).isEmpty() && sellerDao.existsByEmail(email))
+            throw new IllegalArgumentException("Email non trovata.");
+        String code = otpService.generateOtp(email);
+        emailService.sendOtp(email, code, "Recupero password");
+    }
+
+    // ── reset password con verifica OTP
+    public void resetPassword(String email, String otp, String newPassword) {
+        if (!otpService.verifyOtp(email, otp))
+            throw new IllegalArgumentException("OTP non valido o scaduto.");
+
+        validaPassword(newPassword);
+
         Optional<User> userOpt = userDao.findByEmail(email);
         if (userOpt.isPresent()) {
-            User u = userOpt.get();
-            UserDto dto = new UserDto(u.getId(), u.getName(), u.getSurname(),
-                    u.getEmail(), u.getBirthDate(), u.getAuthProvider());
-            dto.setRole(ruolo);
-            dto.setBanned(u.isBanned());
-            return dto;
+            User user = userOpt.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userDao.update(user);
+            return;
         }
 
-        Optional<Seller> sellerOpt = sellerDao.findByEmail(email);
-        if (sellerOpt.isPresent()) {
-            Seller s = sellerOpt.get();
-            UserDto dto = new UserDto(s.getId(), s.getName(), s.getSurname(),
-                    s.getEmail(), s.getBirthDate(), "LOCAL");
-            dto.setRole(ruolo);
-            dto.setBanned(s.isBanned());
-            return dto;
-        }
-
-        Optional<Admin> adminOpt = adminDao.findByEmail(email);
-        if (adminOpt.isPresent()) {
-            Admin a = adminOpt.get();
-            UserDto dto = new UserDto(a.getId(), a.getName(), a.getSurname(),
-                    a.getEmail(), null, "LOCAL");
-            dto.setRole(ruolo);
-            dto.setBanned(false);
-            return dto;
-        }
-
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato.");
+        Seller seller = sellerDao.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato."));
+        seller.setPassword(passwordEncoder.encode(newPassword));
+        sellerDao.update(seller);
     }
 }

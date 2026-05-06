@@ -1,4 +1,5 @@
-package it.unical.progettoweb.dto.create;
+package it.unical.progettoweb.dto.request;
+
 
 import it.unical.progettoweb.model.Photo;
 import lombok.Data;
@@ -12,5 +13,5 @@ public class PostWithRealEstateCreateDto {
     private double currentPrice;
     private List<Photo> photoUrls;
 
-    private RealEstateCreateDto realEstate;
+    private RealEstateRequest realEstate;
 }

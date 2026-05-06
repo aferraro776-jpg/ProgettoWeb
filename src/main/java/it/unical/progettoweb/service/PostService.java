@@ -1,10 +1,10 @@
 package it.unical.progettoweb.service;
 
 import it.unical.progettoweb.dao.PostDao;
-import it.unical.progettoweb.dto.create.PostCreateDto;
-import it.unical.progettoweb.dto.create.PostWithRealEstateCreateDto;
-import it.unical.progettoweb.dto.send.PostDto;
-import it.unical.progettoweb.dto.send.RealEstateDto;
+import it.unical.progettoweb.dto.request.PostRequest;
+import it.unical.progettoweb.dto.request.PostWithRealEstateCreateDto;
+import it.unical.progettoweb.dto.response.PostDto;
+import it.unical.progettoweb.dto.response.RealEstateDto;
 import it.unical.progettoweb.model.Photo;
 import it.unical.progettoweb.model.Post;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ public class PostService {
     private final PostDao postDao;
     private final RealEstateService realEstateService;
 
-    public PostDto save(PostCreateDto postDto, int sellerId) {
+    public PostDto save(PostRequest postDto, int sellerId) {
         return buildAndSavePost(
                 postDto.getTitle(),
                 postDto.getDescription(),
@@ -82,10 +82,10 @@ public class PostService {
 
     private PostDto toDto(Post post) {
         return new PostDto(post.getId(), post.getTitle(), post.getDescription(), post.getPreviousPrice(),
-                post.getCurrentPrice(), post.getCreatedAt(), post.getSellerId(), post.getRealEstateId());
+                post.getCurrentPrice(), post.getCreatedAt(), post.getSellerId(), post.getRealEstateId(),post.getPhotos() );
     }
 
-    public PostDto update(int id, PostCreateDto postDto) {
+    public PostDto update(int id, PostRequest postDto) {
         Optional<Post> existing = postDao.get(id);
 
         if (existing.isEmpty()) {

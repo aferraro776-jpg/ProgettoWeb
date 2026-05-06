@@ -4,7 +4,7 @@ import it.unical.progettoweb.dao.impl.AdminDao;
 import it.unical.progettoweb.dao.impl.BlacklistDao;
 import it.unical.progettoweb.dao.impl.SellerDao;
 import it.unical.progettoweb.dao.impl.UserDao;
-import it.unical.progettoweb.dto.send.SellerDto;
+import it.unical.progettoweb.dto.request.SellerRequest;
 import it.unical.progettoweb.model.Seller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -65,7 +65,7 @@ public class SellerService {
 
     // aggiorna nome, cognome, email e data di nascita
     // la p.iva è immutabile
-    public void aggiornaProfilo(String emailDalToken, SellerDto dto) {
+    public void aggiornaProfilo(String emailDalToken, SellerRequest dto) {
         Seller seller = getSellerByEmail(emailDalToken);
 
         validaGeneralita(dto.getName(), dto.getSurname());
