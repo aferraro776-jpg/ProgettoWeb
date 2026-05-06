@@ -19,6 +19,7 @@ public class EmailService {
         mailSender.send(msg);
     }
 
+    // per la mail del vincitore delle aste
     public void sendAuctionWon(String to, String postTitle, double amount) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(to);
@@ -27,28 +28,5 @@ public class EmailService {
                 "\" con un'offerta di € " + String.format("%.2f", amount) + ".\n" +
                 "Il venditore ti contatterà a breve.");
         mailSender.send(msg);
-    }
-
-    public void sendContactEmail(
-            String toSellerEmail,
-            String senderName,
-            String senderSurname,
-            String senderEmail,
-            String postId,
-            String postTitle,
-            String message
-    ) {
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(toSellerEmail);
-        mail.setReplyTo(senderEmail);
-        mail.setSubject("Richiesta info annuncio #" + postId + " - " + postTitle);
-        mail.setText(
-                "Hai ricevuto un messaggio da un acquirente interessato al tuo annuncio.\n\n" +
-                        "Nome: " + senderName + " " + senderSurname + "\n" +
-                        "Email: " + senderEmail + "\n\n" +
-                        "Messaggio:\n" + message + "\n\n" +
-                        "Puoi rispondere direttamente a questa email."
-        );
-        mailSender.send(mail);
     }
 }

@@ -86,8 +86,8 @@ public class AuthService {
     }
 
     public void registraUser(UserRequest dto) {
-        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
-         throw new IllegalArgumentException("OTP non valido o scaduto.");
+        //if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+         //throw new IllegalArgumentException("OTP non valido o scaduto.");
 
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
@@ -108,8 +108,8 @@ public class AuthService {
     }
 
     public void registraSeller(SellerRequest dto) {
-        if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
-            throw new IllegalArgumentException("OTP non valido o scaduto.");
+        //if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
+         //   throw new IllegalArgumentException("OTP non valido o scaduto.");
 
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
@@ -172,7 +172,7 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token non valido o scaduto.");
 
         String email = jwtUtil.extractEmail(token);
-        String ruolo = jwtUtil.extractRuolo(token);
+        String ruolo = jwtUtil.extractRole(token);
 
         return switch (ruolo) {
             case "USER" -> userDao.findByEmail(email)
