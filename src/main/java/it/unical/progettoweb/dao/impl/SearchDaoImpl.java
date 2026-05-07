@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,27 +47,27 @@ public class SearchDaoImpl implements SearchDao {
                     p.description           AS "description",
                     p.current_price         AS "currentPrice",
                     p.previous_price        AS "previousPrice",
-                    p."transactionType"     AS "transactionType",
-                    p."isAuction"           AS "isAuction",
+                    p.transaction_type      AS "transactionType",
+                    p.is_auction            AS "isAuction",
                     r.id                    AS "realEstateId",
                     r.type                  AS "realEstateType",
-                    r.square_meters         AS "squareMeters",
+                    r.square_metres         AS "squareMeters",
                     r.address               AS "address"
                 FROM posts p
-                JOIN "realEstate" r ON p.id_real_estate = r.id
+                JOIN real_estate r ON p.id_real_estate = r.id
                 WHERE 1=1
                 """);
 
         List<Object> params = new ArrayList<>();
 
         if (transactionType != null && !transactionType.isBlank()) {
-            sql.append("AND p.\"transactionType\" = ? ");
-            params.add(transactionType.toUpperCase());
+            sql.append("AND p.transaction_type = ? ");
+            params.add(transactionType);
         }
 
         if (realEstateType != null && !realEstateType.isBlank()) {
-            sql.append("AND UPPER(r.type) = ? ");
-            params.add(realEstateType.toUpperCase());
+            sql.append("AND r.type = ? ");
+            params.add(realEstateType);
         }
 
         if (minPrice != null) {
@@ -82,7 +81,7 @@ public class SearchDaoImpl implements SearchDao {
         }
 
         String orderColumn = switch (sortBy != null ? sortBy.toLowerCase() : "") {
-            case "squaremeters" -> "r.square_meters";
+            case "squaremeters" -> "r.square_metres";
             case "title"        -> "p.title";
             default             -> "p.current_price";
         };

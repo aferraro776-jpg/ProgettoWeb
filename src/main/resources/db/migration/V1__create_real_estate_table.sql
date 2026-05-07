@@ -8,7 +8,7 @@ CREATE TABLE public.real_estate (
                                     longit              numeric(10, 8)  NOT NULL,
                                     address             varchar(200)    NOT NULL,
                                     created_at          timestamp       DEFAULT CURRENT_TIMESTAMP NULL,
-                                    type                varchar(30)     NOT NULL DEFAULT 'APPARTAMENTO',
+                                    type                varchar(30)     NOT NULL DEFAULT 'APARTMENT',
                                     floor               int4,
                                     has_elevator        boolean,
                                     has_garden          boolean,

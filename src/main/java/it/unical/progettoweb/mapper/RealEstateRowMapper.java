@@ -23,7 +23,7 @@ public class RealEstateRowMapper implements RowMapper<RealEstate> {
         };
     }
 
-    private void mapCommon(RealEstate r, ResultSet rs) throws SQLException {
+    public void mapCommon(RealEstate r, ResultSet rs) throws SQLException {
         r.setId(rs.getInt("id"));
         r.setTitle(rs.getString("title"));
         r.setDescription(rs.getString("description"));
