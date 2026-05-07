@@ -1,16 +1,17 @@
 package it.unical.progettoweb.mapper;
 
 import it.unical.progettoweb.model.User;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Repository
+
+@Component
 public class UserRowMapper extends PersonRowMapper<User> {
 
     @Override
-    public User mapRow(ResultSet rs,int rowNumb) throws SQLException {
+    public User mapRow(ResultSet rs,int rowNum) throws SQLException {
         User user = new User();
         mapPersonFields(user, rs);
         user.setBirthDate(rs.getDate("birthdate"));

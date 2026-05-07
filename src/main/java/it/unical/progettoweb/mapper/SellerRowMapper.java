@@ -1,9 +1,7 @@
 package it.unical.progettoweb.mapper;
 
 import it.unical.progettoweb.model.Seller;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +10,7 @@ import java.sql.SQLException;
 public class SellerRowMapper extends PersonRowMapper<Seller> {
 
     @Override
-    public Seller mapRow(ResultSet rs,int numRow) throws SQLException {
+    public Seller mapRow(ResultSet rs,int rowNum) throws SQLException {
         Seller seller = new Seller();
         mapPersonFields(seller, rs);
         seller.setVatNumber(rs.getString("vat_number"));
