@@ -19,7 +19,6 @@ public class EmailService {
         mailSender.send(msg);
     }
 
-    // per la mail del vincitore delle aste
     public void sendAuctionWon(String to, String postTitle, double amount) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(to);

@@ -23,9 +23,6 @@ public class UserService {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
-    // valida la nuova email (prima verifica se il formato è corretto, poi verifica che non si trova nella blacklist,
-    // infine verifica che non esista già un account con questa email.
-    // esclude l'email attuale così l'utente può "riconfermare" la propria senza errori
     private void validaEmailModifica(String nuovaEmail, String emailAttuale) {
         if (!Validation.checkEmail(nuovaEmail))
             throw new IllegalArgumentException("Formato email non valido.");
@@ -41,7 +38,6 @@ public class UserService {
         }
     }
 
-    // valida nome e cognome
     private void validaGeneralita(String nome, String cognome) {
         if (!Validation.checkNome(nome))
             throw new IllegalArgumentException("Nome non valido (minimo 3 caratteri).");
@@ -49,7 +45,6 @@ public class UserService {
             throw new IllegalArgumentException("Cognome non valido (minimo 3 caratteri).");
     }
 
-    // valida la data di nascita
     private void validaDataNascita(java.util.Date data) {
         if (data == null)
             throw new IllegalArgumentException("Data di nascita obbligatoria.");
@@ -57,13 +52,11 @@ public class UserService {
             throw new IllegalArgumentException("Data di nascita non valida.");
     }
 
-    // recupera l'utente tramite email estratta dal JWT
     public User getUtenteByEmail(String email) {
         return userDao.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Utente non trovato."));
     }
 
-    // aggiorna nome, cognome, email e data di nascita
     public void aggiornaProfilo(String emailDalToken, UserRequest dto) {
         User user = getUtenteByEmail(emailDalToken);
 
@@ -79,31 +72,24 @@ public class UserService {
         userDao.update(user);
     }
 
-    // cambia la password verificando prima quella vecchia
-    // gli utenti Google non possono usare questo metodo
     public void cambiaPassword(String emailDalToken, String oldPassword, String newPassword) {
         User user = getUtenteByEmail(emailDalToken);
 
-        // gli utenti Google — non hanno una password locale
         if ("GOOGLE".equalsIgnoreCase(user.getAuthProvider()))
             throw new IllegalStateException(
                     "Sei registrato con Google. Non puoi modificare la password.");
 
-        // verifica che la vecchia password sia corretta
         if (!passwordEncoder.matches(oldPassword, user.getPassword()))
             throw new IllegalArgumentException("La vecchia password non è corretta.");
 
-        // valida la nuova password con gli stessi criteri della registrazione
         String errori = Validation.getErrorePassword(newPassword);
         if (errori != null)
             throw new IllegalArgumentException(errori);
 
-        // aggiorna con la nuova password hashata
         user.setPassword(passwordEncoder.encode(newPassword));
         userDao.update(user);
     }
 
-    // cancella l'account dell'utente
     public void cancellaAccount(String emailDalToken) {
         User user = getUtenteByEmail(emailDalToken);
         userDao.delete(user.getId());

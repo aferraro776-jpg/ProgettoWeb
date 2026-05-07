@@ -2,6 +2,7 @@ package it.unical.progettoweb.dao.impl;
 
 import it.unical.progettoweb.dao.SearchDao;
 import it.unical.progettoweb.dto.PostSummaryDto;
+import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -10,13 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@AllArgsConstructor
 public class SearchDaoImpl implements SearchDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public SearchDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private final RowMapper<PostSummaryDto> dtoRowMapper = (rs, rowNum) -> {
         PostSummaryDto dto = new PostSummaryDto();

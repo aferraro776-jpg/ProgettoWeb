@@ -24,7 +24,6 @@ public class AdminService {
 
     private final Random random = new Random();
 
-    // genera un id per il nuovo admin se non esiste gia
     private int generateAdminId() {
         int id;
         do {
@@ -33,10 +32,8 @@ public class AdminService {
         return id;
     }
 
-    // banna l'utente e aggiunge la mail alla blacklist
     public void banUser(String email) {
 
-        // cerca prima tra gli user
         Optional<User> userOpt = userDao.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -48,7 +45,6 @@ public class AdminService {
             return;
         }
 
-        // cerca tra i seller
         Optional<Seller> sellerOpt = sellerDao.findByEmail(email);
         if (sellerOpt.isPresent()) {
             Seller seller = sellerOpt.get();
@@ -63,14 +59,12 @@ public class AdminService {
         throw new IllegalArgumentException("Nessun utente trovato con questa email.");
     }
 
-    // unban, rimuove la mail dalla blacklist
     public void unbanUser(String email) {
         if (!blacklistDao.isBanned(email))
             throw new IllegalStateException("L'utente non risulta bannato.");
 
         blacklistDao.unban(email);
 
-        // ripristina il flag is_banned sull'entità corrispondente
         Optional<User> userOpt = userDao.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -85,29 +79,23 @@ public class AdminService {
             seller.setBanned(false);
             sellerDao.update(seller);
         }
-        // Se l'entità non esiste più in nessuna tabella, la blacklist è già stata pulita
     }
 
-    // trasforma un User in Admin, copia i dati in admins, poi cancella dalla tabella users
     public void promuoviAdAdmin(String email) {
 
-        // solo gli user possono essere promossi, i seller no
         User user = userDao.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Nessun utente trovato con questa email. " +
                                 "Solo gli acquirenti possono essere promossi ad amministratore."));
 
-        // Costruisce il nuovo admin copiando i campi di person
         Admin admin = new Admin();
         admin.setId(generateAdminId());
         admin.setName(user.getName());
         admin.setSurname(user.getSurname());
         admin.setEmail(user.getEmail());
 
-        // Mantiene la stessa password già hashata con BCrypt
         admin.setPassword(user.getPassword());
 
-        // salva in admins e cancella da users
         adminDao.save(admin);
         userDao.delete(user.getId());
     }

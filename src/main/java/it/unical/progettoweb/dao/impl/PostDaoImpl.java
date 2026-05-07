@@ -3,6 +3,7 @@ package it.unical.progettoweb.dao.impl;
 import it.unical.progettoweb.dao.PostDao;
 import it.unical.progettoweb.mapper.PostRowMapper;
 import it.unical.progettoweb.model.Post;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,15 +13,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@AllArgsConstructor
 public class PostDaoImpl implements PostDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Post> rowMapper;
-
-    public PostDaoImpl(JdbcTemplate jdbcTemplate, PostRowMapper postRowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.rowMapper = postRowMapper;
-    }
 
     @Override
     public Post save(Post post) {

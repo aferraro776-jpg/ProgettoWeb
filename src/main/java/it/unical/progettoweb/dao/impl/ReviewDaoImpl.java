@@ -3,6 +3,7 @@ package it.unical.progettoweb.dao.impl;
 import it.unical.progettoweb.dao.ReviewDao;
 import it.unical.progettoweb.mapper.ReviewRowMapper;
 import it.unical.progettoweb.model.Review;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,15 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@AllArgsConstructor
 public class ReviewDaoImpl implements ReviewDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Review> rowMapper;
 
-    public ReviewDaoImpl(JdbcTemplate jdbcTemplate, ReviewRowMapper reviewRowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.rowMapper = reviewRowMapper;
-    }
 
     @Override
     public Review save(Review review) {

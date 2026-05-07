@@ -3,6 +3,7 @@ package it.unical.progettoweb.dao.impl;
 import it.unical.progettoweb.dao.PersonDao;
 import it.unical.progettoweb.mapper.SellerRowMapper;
 import it.unical.progettoweb.model.Seller;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,15 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@AllArgsConstructor
 public class SellerDao implements PersonDao<Seller> {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Seller> rowMapper;
 
-    public SellerDao(JdbcTemplate jdbc, SellerRowMapper mapper) {
-        this.jdbcTemplate = jdbc;
-        this.rowMapper = mapper;
-    }
 
     @Override
     public Seller save(Seller seller) {

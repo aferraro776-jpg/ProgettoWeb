@@ -1,7 +1,5 @@
 package it.unical.progettoweb.dao;
 
-
-
 import it.unical.progettoweb.model.Person;
 
 import java.util.Optional;

@@ -66,9 +66,11 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostRequest postDto) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody PostRequest postDto,
+                                    @RequestHeader("Authorization") String authHeader) {
         try {
-            PostDto updated = postService.update(id, postDto);
+            int sellerId = jwtUtil.extractUserId(authHeader.substring(7));
+            PostDto updated = postService.update(id, postDto,sellerId);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -78,10 +80,14 @@ public class PostController {
     }
 
     @PatchMapping("/{id}/reduce-price")
-    public ResponseEntity<?> reducePrice(@PathVariable int id, @RequestBody Map<String, Double> body) {
+    public ResponseEntity<?> reducePrice(
+                                        @PathVariable int id,
+                                        @RequestBody Map<String, Double> body,
+                                        @RequestHeader("Authorization") String authHeader) {
         try {
             double newPrice = body.get("newPrice");
-            PostDto updated = postService.reducePrice(id, newPrice);
+            int sellerId = jwtUtil.extractUserId(authHeader.substring(7));
+            PostDto updated = postService.reducePrice(id, newPrice,sellerId);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -91,9 +97,10 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> delete(@PathVariable int id,@RequestHeader("Authorization") String authHeader) {
         try {
-            postService.delete(id);
+            int sellerId = jwtUtil.extractUserId(authHeader.substring(7));
+            postService.delete(id,sellerId);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

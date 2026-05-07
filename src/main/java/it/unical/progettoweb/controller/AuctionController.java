@@ -19,9 +19,6 @@ public class AuctionController {
     private final AuctionService auctionService;
     private final JwtUtil jwtUtil;
 
-    // ── POST /api/auctions
-    // Crea una nuova asta (solo SELLER)
-    // Body: { "postId": 12345, "startingPrice": 50000.00, "endDate": "2026-06-01T18:00:00" }
     @PostMapping
     public ResponseEntity<?> createAuction(
             @RequestBody AuctionRequest request,
@@ -38,8 +35,6 @@ public class AuctionController {
         }
     }
 
-    // ── GET /api/auctions/post/{postId}
-    // Recupera l'asta di un annuncio con tutte le offerte (lazy via Proxy)
     @GetMapping("/post/{postId}")
     public ResponseEntity<?> getAuctionByPost(@PathVariable int postId) {
         try {
@@ -50,9 +45,6 @@ public class AuctionController {
         }
     }
 
-    // ── POST /api/auctions/{auctionId}/bids
-    // Fai un'offerta su un'asta (solo USER autenticato)
-    // Body: { "amount": 75000.00 }
     @PostMapping("/{auctionId}/bids")
     public ResponseEntity<?> placeBid(
             @PathVariable int auctionId,
@@ -70,8 +62,6 @@ public class AuctionController {
         }
     }
 
-    // ── DELETE /api/auctions/{auctionId}
-    // Elimina un'asta (solo il venditore proprietario, solo se senza offerte)
     @DeleteMapping("/{auctionId}")
     public ResponseEntity<?> deleteAuction(
             @PathVariable int auctionId,
