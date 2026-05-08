@@ -60,7 +60,6 @@ public class SellerService {
         return toDto(seller);
     }
 
-
     public void aggiornaProfilo(String emailDalToken, SellerRequest dto) {
         if (sellerDao.findByEmail(emailDalToken).isEmpty())
             throw new IllegalArgumentException("Venditore non trovato.");
@@ -76,7 +75,6 @@ public class SellerService {
         seller.setBirthDate(dto.getBirthDate());
         sellerDao.update(seller);
     }
-
 
     public void cambiaPassword(String emailDalToken, String oldPassword, String newPassword) {
         if (sellerDao.findByEmail(emailDalToken).isEmpty())
@@ -108,7 +106,8 @@ public class SellerService {
                 seller.getSurname(),
                 seller.getEmail(),
                 seller.getVatNumber(),
-                seller.getBirthDate()
+                seller.getBirthDate(),
+                "SELLER"
         );
     }
 }
