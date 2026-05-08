@@ -14,11 +14,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('BUYER')")
+@PreAuthorize("hasRole('USER')")
 public class UserController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
+
 
     @GetMapping("/me")
     public ResponseEntity<?> getProfilo(@RequestHeader("Authorization") String authHeader) {
@@ -32,8 +33,7 @@ public class UserController {
                     user.getSurname(),
                     user.getEmail(),
                     user.getBirthDate(),
-                    user.getAuthProvider(),
-                    "BUYER"
+                    user.getAuthProvider()
             );
             return ResponseEntity.ok(dto);
 
@@ -56,6 +56,7 @@ public class UserController {
         }
     }
 
+
     @PutMapping("/me/password")
     public ResponseEntity<String> cambiaPassword(
             @RequestHeader("Authorization") String authHeader,
@@ -76,6 +77,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     @DeleteMapping("/me")
     public ResponseEntity<String> cancellaAccount(
