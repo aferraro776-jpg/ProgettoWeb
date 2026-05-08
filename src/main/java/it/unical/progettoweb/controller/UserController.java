@@ -20,9 +20,6 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    // GET /api/user/me
-    // Restituisce i dati del profilo dell'utente
-    // L'email viene estratta dal token JWT nell'header, non dal body
     @GetMapping("/me")
     public ResponseEntity<?> getProfilo(@RequestHeader("Authorization") String authHeader) {
         try {
@@ -35,7 +32,8 @@ public class UserController {
                     user.getSurname(),
                     user.getEmail(),
                     user.getBirthDate(),
-                    user.getAuthProvider()
+                    user.getAuthProvider(),
+                    "BUYER"
             );
             return ResponseEntity.ok(dto);
 
@@ -44,9 +42,6 @@ public class UserController {
         }
     }
 
-    // PUT /api/user/me
-    // Aggiorna nome, cognome, email e data di nascita dell'utente autenticato
-    // Body: { "name": "...", "surname": "...", "email": "...", "birthDate": "yyyy-MM-dd" }
     @PutMapping("/me")
     public ResponseEntity<String> aggiornaProfilo(
             @RequestHeader("Authorization") String authHeader,
@@ -61,9 +56,6 @@ public class UserController {
         }
     }
 
-    // PUT /api/user/me/password
-    // cambia la password dell'utente
-    // Body: { "oldPassword": "...", "newPassword": "..." }
     @PutMapping("/me/password")
     public ResponseEntity<String> cambiaPassword(
             @RequestHeader("Authorization") String authHeader,
@@ -73,7 +65,6 @@ public class UserController {
             String oldPassword = body.get("oldPassword");
             String newPassword = body.get("newPassword");
 
-            // controlla che entrambi i campi siano presenti nel body
             if (oldPassword == null || newPassword == null)
                 return ResponseEntity.badRequest()
                         .body("I campi oldPassword e newPassword sono obbligatori.");
@@ -86,8 +77,6 @@ public class UserController {
         }
     }
 
-    // DELETE /api/user/me
-    // Cancella l'account dell'utente
     @DeleteMapping("/me")
     public ResponseEntity<String> cancellaAccount(
             @RequestHeader("Authorization") String authHeader) {
@@ -101,8 +90,6 @@ public class UserController {
         }
     }
 
-    // metodo privato riutilizzato da tutti gli endpoint
-    // estrae l'email dal token JWT rimuovendo il prefisso "Bearer "
     private String estraiEmail(String authHeader) {
         String token = authHeader.substring(7);
         return jwtUtil.extractEmail(token);

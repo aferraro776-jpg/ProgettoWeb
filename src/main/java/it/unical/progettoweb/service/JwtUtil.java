@@ -46,6 +46,14 @@ public class JwtUtil {
         return parseClaims(token).get("ruolo", String.class);
     }
 
+    public String extractRole(String token) {
+        return extractRuolo(token);
+    }
+
+    public int extractUserId(String token) {
+        return parseClaims(token).get("id", Integer.class);
+    }
+
     public boolean isTokenValid(String token) {
         try {
             parseClaims(token);
@@ -61,9 +69,5 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    public int extractUserId(String token) {
-        return parseClaims(token).get("id", Integer.class);
     }
 }
