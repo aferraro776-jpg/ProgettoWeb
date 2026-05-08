@@ -40,27 +40,23 @@ public class AuthService {
 
     private int generateUserId() {
         int id;
-        do {
-            id = random.nextInt(89999) + 10000;
-        } while (userDao.get(id).isPresent());
+        do { id = random.nextInt(89999) + 10000; }
+        while (userDao.get(id).isPresent());
         return id;
     }
 
     private int generateSellerId() {
         int id;
-        do {
-            id = random.nextInt(89999) + 10000;
-        } while (sellerDao.get(id).isPresent());
+        do { id = random.nextInt(89999) + 10000; }
+        while (sellerDao.get(id).isPresent());
         return id;
     }
 
     private void validaEmail(String email) {
         if (!Validation.checkEmail(email))
             throw new IllegalArgumentException("Formato email non valido.");
-
         if (blacklistDao.isBanned(email))
             throw new IllegalArgumentException("Email non autorizzata alla registrazione.");
-
         if (userDao.existsByEmail(email) || sellerDao.existsByEmail(email) || adminDao.existsByEmail(email))
             throw new IllegalArgumentException("Email già registrata.");
     }
@@ -86,9 +82,6 @@ public class AuthService {
     }
 
     public void registraUser(UserRequest dto) {
-        //if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
-         //throw new IllegalArgumentException("OTP non valido o scaduto.");
-
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
         validaPassword(dto.getPassword());
@@ -108,9 +101,6 @@ public class AuthService {
     }
 
     public void registraSeller(SellerRequest dto) {
-        //if (!otpService.verifyOtp(dto.getEmail(), dto.getOtp()))
-         //   throw new IllegalArgumentException("OTP non valido o scaduto.");
-
         validaEmail(dto.getEmail());
         validaGeneralita(dto.getName(), dto.getSurname());
         validaPassword(dto.getPassword());
@@ -118,7 +108,6 @@ public class AuthService {
 
         if (dto.getVatNumber() == null || dto.getVatNumber().isBlank())
             throw new IllegalArgumentException("Partita IVA obbligatoria per i venditori.");
-
         if (sellerDao.existsByVatNumber(dto.getVatNumber()))
             throw new IllegalArgumentException("Partita IVA già registrata.");
 
@@ -143,7 +132,7 @@ public class AuthService {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Questo account usa Google per accedere.");
             if (!passwordEncoder.matches(password, user.getPassword()))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
-            return jwtUtil.generateToken(email, "USER",user.getId());
+            return jwtUtil.generateToken(email, "BUYER", user.getId());
         }
 
         Optional<Seller> sellerOpt = sellerDao.findByEmail(email);
@@ -151,7 +140,7 @@ public class AuthService {
             Seller seller = sellerOpt.get();
             if (!passwordEncoder.matches(password, seller.getPassword()))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
-            return jwtUtil.generateToken(email, "SELLER",seller.getId());
+            return jwtUtil.generateToken(email, "SELLER", seller.getId());
         }
 
         Optional<Admin> adminOpt = adminDao.findByEmail(email);
@@ -159,7 +148,7 @@ public class AuthService {
             Admin admin = adminOpt.get();
             if (!passwordEncoder.matches(password, admin.getPassword()))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
-            return jwtUtil.generateToken(email, "ADMIN",admin.getId());
+            return jwtUtil.generateToken(email, "ADMIN", admin.getId());
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
@@ -175,21 +164,21 @@ public class AuthService {
         String ruolo = jwtUtil.extractRole(token);
 
         return switch (ruolo) {
-            case "USER" -> userDao.findByEmail(email)
+            case "BUYER" -> userDao.findByEmail(email)
                     .map(u -> new UserDto(
                             u.getId(), u.getName(), u.getSurname(),
-                            u.getEmail(), u.getBirthDate(), u.getAuthProvider()))
+                            u.getEmail(), u.getBirthDate(), u.getAuthProvider(), "BUYER"))
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
 
             case "SELLER" -> sellerDao.findByEmail(email)
                     .map(s -> new SellerDto(
                             s.getId(), s.getName(), s.getSurname(),
-                            s.getEmail(), s.getVatNumber(), s.getBirthDate()))
+                            s.getEmail(), s.getVatNumber(), s.getBirthDate(), "SELLER"))
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venditore non trovato."));
 
             case "ADMIN" -> adminDao.findByEmail(email)
                     .map(a -> new AdminDto(
-                            a.getId(), a.getName(), a.getSurname(), a.getEmail()))
+                            a.getId(), a.getName(), a.getSurname(), a.getEmail(), "ADMIN"))
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin non trovato."));
 
             default -> throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Ruolo non riconosciuto.");
@@ -204,7 +193,7 @@ public class AuthService {
     }
 
     public void inviaOtpRecuperoPassword(String email) {
-        if (userDao.findByEmail(email).isEmpty() && sellerDao.findByEmail(email).isEmpty())
+        if (userDao.findByEmail(email).isEmpty() && sellerDao.existsByEmail(email))
             throw new IllegalArgumentException("Email non trovata.");
         String code = otpService.generateOtp(email);
         emailService.sendOtp(email, code, "Recupero password");
@@ -220,13 +209,18 @@ public class AuthService {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             user.setPassword(passwordEncoder.encode(newPassword));
-            userDao.update(user);
+            userDao.save(user);
             return;
         }
 
-        Seller seller = sellerDao.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato."));
-        seller.setPassword(passwordEncoder.encode(newPassword));
-        sellerDao.update(seller);
+        Optional<Seller> sellerOpt = sellerDao.findByEmail(email);
+        if (sellerOpt.isPresent()) {
+            Seller seller = sellerOpt.get();
+            seller.setPassword(passwordEncoder.encode(newPassword));
+            sellerDao.save(seller);
+            return;
+        }
+
+        throw new IllegalArgumentException("Email non trovata.");
     }
 }
