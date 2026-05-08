@@ -63,7 +63,7 @@ public class PostService {
         return toDto(post);
     }
 
-    public PostDto reducePrice(int id, double newPrice) {
+    public PostDto reducePrice(int id, double newPrice,int sellerId) {
         Post existing = postDao.get(id).orElse(null);
 
         if (existing == null) {
@@ -77,6 +77,9 @@ public class PostService {
         existing.setPreviousPrice(existing.getCurrentPrice());
         existing.setCurrentPrice(newPrice);
         Post saved = postDao.update(existing);
+        if(sellerId != saved.getSellerId()){
+            throw new RuntimeException("Non puoi modificare un post di un altro venditore");
+        }
         return toDto(saved);
     }
 
@@ -85,7 +88,7 @@ public class PostService {
                 post.getCurrentPrice(), post.getCreatedAt(), post.getSellerId(), post.getRealEstateId(),post.getPhotos() );
     }
 
-    public PostDto update(int id, PostRequest postDto) {
+    public PostDto update(int id, PostRequest postDto,int postId) {
         Optional<Post> existing = postDao.get(id);
 
         if (existing.isEmpty()) {
@@ -101,14 +104,21 @@ public class PostService {
         post.setRealEstateId(postDto.getRealEstateId());
 
         Post saved = postDao.update(post);
+        if(postId != saved.getId()){
+            throw new RuntimeException("Non puoi modificare un post di un altro venditore");
+        }
         return toDto(saved);
     }
 
-    public void delete(int id) {
+    public void delete(int id,int sellerId) {
         Optional<Post> existing = postDao.get(id);
 
         if (existing.isEmpty()) {
             throw new RuntimeException("Post non trovato");
+        }
+
+        if(sellerId != existing.get().getSellerId()){
+            throw new RuntimeException("Non puoi eliminare un post di un altro venditore");
         }
 
         postDao.delete(id);

@@ -25,23 +25,14 @@ public class SellerController {
     public ResponseEntity<?> getProfilo(@RequestHeader("Authorization") String authHeader) {
         try {
             String email = estraiEmail(authHeader);
-            Seller seller = sellerService.getSellerByEmail(email);
-
-            SellerDto dto = new SellerDto(
-                    seller.getId(),
-                    seller.getName(),
-                    seller.getSurname(),
-                    seller.getEmail(),
-                    seller.getVatNumber(),
-                    seller.getBirthDate(),
-                    "SELLER"
-            );
-            return ResponseEntity.ok(dto);
+            SellerDto seller = sellerService.getSellerByEmail(email);
+            return ResponseEntity.ok(seller);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     @PutMapping("/me")
     public ResponseEntity<String> aggiornaProfilo(
@@ -66,6 +57,7 @@ public class SellerController {
             String oldPassword = body.get("oldPassword");
             String newPassword = body.get("newPassword");
 
+
             if (oldPassword == null || newPassword == null)
                 return ResponseEntity.badRequest()
                         .body("I campi oldPassword e newPassword sono obbligatori.");
@@ -77,6 +69,7 @@ public class SellerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     @DeleteMapping("/me")
     public ResponseEntity<String> cancellaAccount(

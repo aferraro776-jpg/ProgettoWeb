@@ -35,7 +35,7 @@ public class CloudflareR2Service {
         PutObjectRequest putReq = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectKey)
-                .contentType(file.getContentType()) // Fondamentale per renderizzarle nel browser
+                .contentType(file.getContentType())
                 .build();
 
         s3Client.putObject(putReq, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));

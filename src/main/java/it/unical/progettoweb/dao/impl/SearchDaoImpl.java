@@ -2,21 +2,18 @@ package it.unical.progettoweb.dao.impl;
 
 import it.unical.progettoweb.dao.SearchDao;
 import it.unical.progettoweb.dto.PostSummaryDto;
+import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@AllArgsConstructor
 public class SearchDaoImpl implements SearchDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public SearchDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private final RowMapper<PostSummaryDto> dtoRowMapper = (rs, rowNum) -> {
         PostSummaryDto dto = new PostSummaryDto();
@@ -30,7 +27,6 @@ public class SearchDaoImpl implements SearchDao {
         dto.setRealEstateId(rs.getInt("realEstateId"));
         dto.setRealEstateType(rs.getString("realEstateType"));
         dto.setSquareMeters(rs.getDouble("squareMeters"));
-        dto.setCity(rs.getString("city"));
         dto.setAddress(rs.getString("address"));
         return dto;
     };
@@ -39,7 +35,6 @@ public class SearchDaoImpl implements SearchDao {
     public List<PostSummaryDto> search(
             String transactionType,
             String realEstateType,
-            String city,
             Double minPrice,
             Double maxPrice,
             String sortBy,
@@ -50,52 +45,45 @@ public class SearchDaoImpl implements SearchDao {
                     p.id                    AS "postId",
                     p.title                 AS "title",
                     p.description           AS "description",
-                    p.currentprice          AS "currentPrice",
-                    p.previousprice         AS "previousPrice",
-                    p."transactionType"     AS "transactionType",
-                    p."isAuction"           AS "isAuction",
+                    p.current_price         AS "currentPrice",
+                    p.previous_price        AS "previousPrice",
+                    p.transaction_type      AS "transactionType",
+                    p.is_auction            AS "isAuction",
                     r.id                    AS "realEstateId",
                     r.type                  AS "realEstateType",
-                    r.squaremeters          AS "squareMeters",
-                    r.city                  AS "city",
+                    r.square_metres         AS "squareMeters",
                     r.address               AS "address"
                 FROM posts p
-                JOIN "realEstate" r ON p.idrealestate = r.id
+                JOIN real_estate r ON p.id_real_estate = r.id
                 WHERE 1=1
                 """);
 
         List<Object> params = new ArrayList<>();
 
         if (transactionType != null && !transactionType.isBlank()) {
-            sql.append("AND p.\"transactionType\" = ? ");
-            params.add(transactionType.toUpperCase());
+            sql.append("AND p.transaction_type = ? ");
+            params.add(transactionType);
         }
 
         if (realEstateType != null && !realEstateType.isBlank()) {
-            sql.append("AND UPPER(r.type) = ? ");
-            params.add(realEstateType.toUpperCase());
-        }
-
-        if (city != null && !city.isBlank()) {
-            sql.append("AND UPPER(r.city) LIKE ? ");
-            params.add("%" + city.toUpperCase() + "%");
+            sql.append("AND r.type = ? ");
+            params.add(realEstateType);
         }
 
         if (minPrice != null) {
-            sql.append("AND p.currentprice >= ? ");
+            sql.append("AND p.current_price >= ? ");
             params.add(minPrice);
         }
 
         if (maxPrice != null) {
-            sql.append("AND p.currentprice <= ? ");
+            sql.append("AND p.current_price <= ? ");
             params.add(maxPrice);
         }
 
         String orderColumn = switch (sortBy != null ? sortBy.toLowerCase() : "") {
-            case "squaremeters" -> "r.squaremeters";
-            case "city"         -> "r.city";
+            case "squaremeters" -> "r.square_metres";
             case "title"        -> "p.title";
-            default             -> "p.currentprice";
+            default             -> "p.current_price";
         };
 
         String direction = "desc".equalsIgnoreCase(sortDir) ? "DESC" : "ASC";

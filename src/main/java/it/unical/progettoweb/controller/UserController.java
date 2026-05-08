@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('BUYER')")
 public class UserController {
 
     private final UserService userService;

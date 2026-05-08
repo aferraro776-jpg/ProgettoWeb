@@ -8,7 +8,6 @@ public interface SearchDao {
     List <PostSummaryDto> search(
             String transactionType,
             String realEstateType,
-            String city,
             Double minPrice,
             Double maxPrice,
             String sortBy,

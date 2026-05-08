@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public abstract class PersonRowMapper<T extends Person> implements RowMapper<T>{
     @Override
-    public abstract T mapRow(ResultSet resultSet,int rowNumb) throws SQLException;
+    public abstract T mapRow(ResultSet resultSet,int rowNum) throws SQLException;
 
     protected void mapPersonFields(T person, ResultSet rs) throws SQLException {
         person.setId(rs.getInt("id"));

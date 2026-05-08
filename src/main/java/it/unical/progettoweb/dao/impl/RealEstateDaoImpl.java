@@ -2,7 +2,7 @@ package it.unical.progettoweb.dao.impl;
 
 import it.unical.progettoweb.mapper.RealEstateRowMapper;
 import it.unical.progettoweb.model.RealEstate;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class RealEstateDaoImpl {
 
     private final JdbcTemplate jdbcTemplate;

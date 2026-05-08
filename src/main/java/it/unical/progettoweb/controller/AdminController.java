@@ -16,13 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-// ho aggiunto un v9 insert admin nella db migration, se serve usate quel token per fare i test
-// la password corrispondente è Admin123!
-
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')") // tutti gli endpoint di questo controller richiedono ruolo admin
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final AdminService adminService;
@@ -51,9 +48,7 @@ public class AdminController {
         return ResponseEntity.ok(blacklistDao.getAll());
     }
 
-    // POST /api/admin/ban
-    // Banna un utente: lo aggiunge alla blacklist e setta is_banned=true
-    // Body: { "email": "utente@example.com" }
+
     @PostMapping("/ban")
     public ResponseEntity<String> banUser(@RequestBody BlacklistRequest request) {
         try {
@@ -68,9 +63,6 @@ public class AdminController {
         }
     }
 
-    // POST /api/admin/unban
-    // Rimuove il ban: elimina dalla blacklist e setta is_banned=false
-    // Body: { "email": "utente@example.com" }
     @PostMapping("/unban")
     public ResponseEntity<String> unbanUser(@RequestBody BlacklistRequest request) {
         try {
@@ -81,8 +73,7 @@ public class AdminController {
         }
     }
 
-    //  DELETE /api/admin/users/{id}
-    // Cancella un acquirente dal sistema
+
     @DeleteMapping("/users/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         if (userDao.get(id).isEmpty())
@@ -91,8 +82,6 @@ public class AdminController {
         return ResponseEntity.ok("Utente eliminato.");
     }
 
-    // DELETE /api/admin/sellers/{id}
-    // Cancella un venditore dal sistema
     @DeleteMapping("/sellers/{id}")
     public ResponseEntity<String> deleteSeller(@PathVariable int id) {
         if (sellerDao.get(id).isEmpty())
@@ -101,9 +90,6 @@ public class AdminController {
         return ResponseEntity.ok("Venditore eliminato.");
     }
 
-    // POST /api/admin/promote
-    // Promuove un User ad Admin: copia i dati in admins, cancella da users
-    // Body: { "email": "utente@example.com" }
     @PostMapping("/promote")
     public ResponseEntity<String> promoteToAdmin(@RequestBody BlacklistRequest request) {
         try {

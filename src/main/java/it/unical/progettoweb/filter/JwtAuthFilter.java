@@ -34,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if (jwtUtil.isTokenValid(token)) {
                 String email = jwtUtil.extractEmail(token);
-                String ruolo = jwtUtil.extractRuolo(token); // estrae il ruolo dal token
+                String ruolo = jwtUtil.extractRole(token); // estrae il ruolo dal token
 
                 // imposta il ruolo come authority Spring Security (es. "ROLE_USER")
                 List<SimpleGrantedAuthority> authorities =

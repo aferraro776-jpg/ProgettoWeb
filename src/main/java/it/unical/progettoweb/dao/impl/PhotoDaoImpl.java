@@ -7,6 +7,7 @@ import it.unical.progettoweb.mapper.PhotoRowMapper;
 import it.unical.progettoweb.model.Photo;
 import it.unical.progettoweb.proxy.PhotoCollection;
 import it.unical.progettoweb.proxy.PhotoList;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,15 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@AllArgsConstructor
 public class PhotoDaoImpl implements PhotoDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Photo> rowMapper;
 
-    public PhotoDaoImpl(JdbcTemplate jdbc, PhotoRowMapper mapper) {
-        this.jdbcTemplate = jdbc;
-        this.rowMapper = mapper;
-    }
 
     @Override
     public Photo save(Photo photo) {

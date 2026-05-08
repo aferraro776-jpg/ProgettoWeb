@@ -13,10 +13,6 @@ public class Validation {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
     }
 
-    public static boolean checkPassword(String password) {
-        return password != null && getErrorePassword(password) == null;
-    }
-
     public static boolean checkNome(String nome) {
         return nome != null && nome.length() > 2;
     }
@@ -29,9 +25,6 @@ public class Validation {
         return dataNascita != null && DATE_PATTERN.matcher(dataNascita).matches();
     }
 
-    public static boolean checkNumero(String numeroTelefono) {
-        return numeroTelefono != null && PHONE_PATTERN.matcher(numeroTelefono).matches();
-    }
     public static String getErrorePassword(String password) {
 
         if (password == null) return "La password non può essere vuota.\n";
@@ -46,7 +39,4 @@ public class Validation {
         return errori.isEmpty() ? null : errori.toString();
     }
 
-    public static boolean checkUsername(String newUsername) {
-        return newUsername != null && newUsername.length() >= 3 && newUsername.length() <= 15;
-    }
 }

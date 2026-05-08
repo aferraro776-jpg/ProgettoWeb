@@ -1,83 +1,107 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dao.impl.ReviewDaoImpl;
-import it.unical.progettoweb.model.Review;
+import it.unical.progettoweb.dto.request.ReviewRequest;
+import it.unical.progettoweb.dto.response.ReviewDto;
+import it.unical.progettoweb.service.JwtUtil;
+import it.unical.progettoweb.service.ReviewsService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/reviews")
+@AllArgsConstructor
 public class ReviewController {
 
-    private final ReviewDaoImpl reviewDao;
-
-    public ReviewController(ReviewDaoImpl reviewDao) {
-        this.reviewDao = reviewDao;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Review>> getAll() {
-        return ResponseEntity.ok(reviewDao.getAll());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Review> getById(@PathVariable int id) {
-        return reviewDao.get(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/realestate/{realEstateId}")
-    public ResponseEntity<List<Review>> getByRealEstate(@PathVariable int realEstateId) {
-        return ResponseEntity.ok(reviewDao.findByRealEstateId(realEstateId));
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Review>> getByUser(@PathVariable int userId) {
-        return ResponseEntity.ok(reviewDao.findByUserId(userId));
-    }
-
-    @GetMapping("/realestate/{realEstateId}/average")
-    public ResponseEntity<Map<String, Double>> getAverageRating(@PathVariable int realEstateId) {
-        Double avg = reviewDao.getAverageRatingForRealEstate(realEstateId);
-        return ResponseEntity.ok(Map.of("averageRating", avg));
-    }
+    private final ReviewsService reviewsService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody Review review) {
-        if (review.getId() == 0) {
-            review.setId(new Random().nextInt(89999) + 10000);
+    public ResponseEntity<ReviewDto> create(
+            @RequestBody ReviewRequest request,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            int userId = jwtUtil.extractUserId(authHeader.substring(7));
+            ReviewDto savedReview = reviewsService.create(request, userId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        if (review.getRating() < 0 || review.getRating() > 5) {
-            return ResponseEntity.badRequest().body("Il rating deve essere tra 0 e 5");
-        }
-
-        reviewDao.save(review);
-        return ResponseEntity.ok("Review created");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable int id, @RequestBody Review review) {
-        return reviewDao.get(id).map(existing -> {
-            review.setId(id);
-            if (review.getRating() < 0 || review.getRating() > 5) {
-                return ResponseEntity.badRequest().body("Il rating deve essere tra 0 e 5");
-            }
-            reviewDao.update(review);
-            return ResponseEntity.ok("Review updated");
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ReviewDto> update(
+            @PathVariable Integer id,
+            @RequestBody ReviewRequest request,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            int userId = jwtUtil.extractUserId(authHeader.substring(7));
+            ReviewDto updated = reviewsService.update(id, request, userId);
+            return ResponseEntity.ok(updated);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Integer id,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            int userId = jwtUtil.extractUserId(authHeader.substring(7));
+            String role = jwtUtil.extractRole(authHeader.substring(7));
+            reviewsService.delete(id, userId,role);
+            return ResponseEntity.noContent().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ReviewDto> getById(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(reviewsService.getById(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable int id) {
-        return reviewDao.get(id).map(existing -> {
-            reviewDao.delete(id);
-            return ResponseEntity.ok("Review deleted");
-        }).orElse(ResponseEntity.notFound().build());
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<List<ReviewDto>> getByPost(@PathVariable Integer postId) {
+        try {
+            return ResponseEntity.ok(reviewsService.getByPostId(postId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ReviewDto>> getByUser(@PathVariable Integer userId) {
+        try {
+            return ResponseEntity.ok(reviewsService.getByUserId(userId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @GetMapping
+    public ResponseEntity<List<ReviewDto>> getAll() {
+        try {
+            return ResponseEntity.ok(reviewsService.getAll());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
 }

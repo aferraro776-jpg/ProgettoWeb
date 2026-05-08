@@ -1,17 +1,12 @@
 package it.unical.progettoweb.controller;
 
-import it.unical.progettoweb.dao.impl.UserDao;
-import it.unical.progettoweb.dto.response.UserDto;
 import it.unical.progettoweb.dto.request.SellerRequest;
 import it.unical.progettoweb.dto.request.UserRequest;
-import it.unical.progettoweb.model.User;
 import it.unical.progettoweb.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import it.unical.progettoweb.service.EmailService;
-import it.unical.progettoweb.service.OtpService;
 
 import java.util.Map;
 
@@ -23,15 +18,6 @@ public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
-    private final OtpService otpService;
-    private final EmailService emailService;
-    private final UserDao userDao;
-
-    @GetMapping("/hash")
-    public String hash() {
-        return passwordEncoder.encode("Admin123!");
-    }
-
     @PostMapping("/register/user")
     public ResponseEntity<String> registerUser(@RequestBody UserRequest dto) {
         try {
