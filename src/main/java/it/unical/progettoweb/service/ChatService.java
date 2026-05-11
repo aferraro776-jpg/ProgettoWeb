@@ -22,31 +22,28 @@ public class ChatService {
     private String groqApiKey;
 
     private static final String GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-    private static final String MODEL = "llama3-8b-8192";
+    private static final String MODEL = "llama-3.3-70b-versatile";
 
     public String rispondi(String domanda) {
         String contesto = estraiContestoDalDb(domanda);
         List<Map<String, String>> messaggi = new ArrayList<>();
 
         messaggi.add(Map.of(
-                "role", "system",
-                "content", """
-                Sei un assistente immobiliare esperto che aiuta gli utenti del sito ProgettoWeb,
-                una piattaforma di annunci immobiliari.
+            "role", "system",
+            "content", """
+                Sei un assistente immobiliare conciso per la piattaforma ProgettoWeb.
                 
-                Rispondi SOLO a domande inerenti a:
-                - Zone e quartieri delle città
-                - Prezzi degli immobili
-                - Tipologie di immobili (appartamenti, ville, garage, terreni)
-                - Consigli sull'acquisto/affitto immobiliare
-                - Informazioni sugli annunci presenti nella piattaforma
+                Rispondi SOLO a domande su immobili, zone, prezzi, acquisto/affitto.
+                Se la domanda non riguarda questi argomenti, dillo in una frase sola.
                 
-                Se la domanda non riguarda questi argomenti, rispondi educatamente che
-                puoi aiutare solo con domande immobiliari.
-                
-                Rispondi sempre in italiano, in modo chiaro e conciso.
-                Basa le tue risposte SUI DATI REALI forniti nel contesto quando disponibili.
-                NON inventare prezzi o dati non presenti nel contesto.
+                REGOLE SULLE RISPOSTE:
+                - Massimo 3-4 frasi, niente elenchi lunghi
+                - Vai dritto al punto, niente preamboli tipo "Purtroppo..." o "Tuttavia..."
+                - Se hai dati reali dal database, usali come priorità
+                - Se il database non ha dati sufficienti, rispondi con conoscenza generale
+                  su prezzi e zone italiane (es. zone storiche costose, periferie più economiche)
+                - Non dire mai "non ho informazioni" se puoi dare un'indicazione generale utile
+                - Rispondi sempre in italiano
                 """
         ));
 
@@ -122,7 +119,7 @@ public class ChatService {
         Map<String, Object> body = new HashMap<>();
         body.put("model", MODEL);
         body.put("messages", messaggi);
-        body.put("max_tokens", 512);
+        body.put("max_tokens", 180);
         body.put("temperature", 0.3);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
@@ -133,7 +130,7 @@ public class ChatService {
             Map message = (Map) choices.get(0).get("message");
             return (String) message.get("content");
         } catch (Exception e) {
-            return "Mi dispiace, si è verificato un errore. Riprova tra poco.";
+            return "ERRORE: Il chatbot è momentaneamente non disponibile, riprovare tra poco.";
         }
     }
 
