@@ -101,3 +101,4 @@ public class ApartmentDao implements RealEstateDao<Apartment> {
         );
     }
 }
+//...
