@@ -17,16 +17,16 @@ public class GeocodingService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public double[] geocodifica(String via, String numeroCivico, String citta, String cap, String provincia) {
-        String indirizzoCompleto = via + " " + numeroCivico + ", " + cap + " " + citta + " " + provincia + ", Italy";
-        String encoded = URLEncoder.encode(indirizzoCompleto, StandardCharsets.UTF_8);
+    public double[] geocodifica(String street, String streetNumber, String city, String cap, String province) {
+        String address = street + " " + streetNumber + ", " + cap + " " + city + " " + province + ", Italy";
+        String encoded = URLEncoder.encode(address, StandardCharsets.UTF_8);
         String url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + encoded + "&key=" + apiKey;
 
         ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
         JsonNode body = response.getBody();
 
         if (body == null || !body.path("status").asText().equals("OK")) {
-            throw new RuntimeException("Geocoding fallito per: " + indirizzoCompleto);
+            throw new RuntimeException("Geocoding fallito per: " + address);
         }
 
         JsonNode location = body.path("results").get(0).path("geometry").path("location");
