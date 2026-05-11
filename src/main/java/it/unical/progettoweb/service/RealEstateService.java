@@ -22,9 +22,12 @@ public class RealEstateService {
     private final BuildingLotDao buildingLotDao;
     private final NonBuildingLotDao nonBuildingLotDao;
     private final RealEstateDaoImpl realEstateDao;
+    private final GeocodingService geocodingService;
     private final Random random = new Random();
 
     public RealEstateDto save(RealEstateRequest dto) {
+        enrichWithCoordinates(dto);
+
         return switch (dto) {
             case ApartmentRequest d -> {
                 Apartment e = new Apartment();
@@ -76,6 +79,8 @@ public class RealEstateService {
     }
 
     public Object update(int id, RealEstateRequest dto) {
+        enrichWithCoordinates(dto);
+
         return switch (dto) {
             case ApartmentRequest d -> {
                 Apartment e = new Apartment();
@@ -133,6 +138,22 @@ public class RealEstateService {
         RealEstate realEstate = realEstateDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("RealEstate non trovato"));
         return toDto(realEstate);
+    }
+
+    private void enrichWithCoordinates(RealEstateRequest dto) {
+        double[] coords = geocodingService.geocodifica(
+                dto.getStreet(),
+                dto.getCivicNumber(),
+                dto.getCity(),
+                dto.getCap(),
+                dto.getProvince()
+        );
+        dto.setLatit(coords[0]);
+        dto.setLongit(coords[1]);
+        dto.setAddress(
+                dto.getStreet() + " " + dto.getCivicNumber() + ", " +
+                        dto.getCap() + " " + dto.getCity() + " (" + dto.getProvince() + ")"
+        );
     }
 
     private void mapCommon(RealEstate entity, RealEstateRequest dto) {

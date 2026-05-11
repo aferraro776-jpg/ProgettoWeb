@@ -26,6 +26,8 @@ public class ContactController {
             @RequestBody ContactRequest req,
             @RequestHeader("Authorization") String authHeader
     ) {
+        String senderEmail = jwtUtil.extractEmail(authHeader.substring(7));
+
         Post post = postDao.get(req.getPostId())
                 .orElseThrow(() -> new RuntimeException("Annuncio non trovato"));
 
@@ -36,7 +38,7 @@ public class ContactController {
                 seller.getEmail(),
                 req.getSenderName(),
                 req.getSenderSurname(),
-                req.getSenderEmail(),
+                senderEmail,
                 String.valueOf(req.getPostId()),
                 req.getPostTitle(),
                 req.getMessage()

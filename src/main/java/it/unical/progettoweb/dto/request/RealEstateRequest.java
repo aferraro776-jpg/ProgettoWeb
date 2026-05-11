@@ -6,11 +6,11 @@ import lombok.Data;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ApartmentRequest.class,       name = "APARTMENT"),
-        @JsonSubTypes.Type(value = VillaRequest.class,           name = "VILLA"),
-        @JsonSubTypes.Type(value = GarageRequest.class,          name = "GARAGE"),
-        @JsonSubTypes.Type(value = BuildingLotRequest.class,     name = "BUILDING_LOT"),
-        @JsonSubTypes.Type(value = NonBuildingLotRequest.class,  name = "NON_BUILDING_LOT")
+        @JsonSubTypes.Type(value = ApartmentRequest.class,      name = "APARTMENT"),
+        @JsonSubTypes.Type(value = VillaRequest.class,          name = "VILLA"),
+        @JsonSubTypes.Type(value = GarageRequest.class,         name = "GARAGE"),
+        @JsonSubTypes.Type(value = BuildingLotRequest.class,    name = "BUILDING_LOT"),
+        @JsonSubTypes.Type(value = NonBuildingLotRequest.class, name = "NON_BUILDING_LOT")
 })
 @Data
 public abstract class RealEstateRequest {
@@ -19,7 +19,14 @@ public abstract class RealEstateRequest {
     private int numberOfRooms;
     private String description;
     private double squareMetres;
+
     private double latit;
     private double longit;
     private String address;
+
+    private String street;
+    private String civicNumber;
+    private String city;
+    private String cap;
+    private String province;
 }
