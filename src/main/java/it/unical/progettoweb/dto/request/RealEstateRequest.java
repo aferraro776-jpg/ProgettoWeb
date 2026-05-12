@@ -19,11 +19,6 @@ public abstract class RealEstateRequest {
     private int numberOfRooms;
     private String description;
     private double squareMetres;
-
-    private double latit;
-    private double longit;
-    private String address;
-
     private String street;
     private String civicNumber;
     private String city;

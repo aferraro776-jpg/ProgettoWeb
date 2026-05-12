@@ -26,12 +26,11 @@ public class RealEstateService {
     private final Random random = new Random();
 
     public RealEstateDto save(RealEstateRequest dto) {
-        enrichWithCoordinates(dto);
-
         return switch (dto) {
             case ApartmentRequest d -> {
                 Apartment e = new Apartment();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setFloor(d.getFloor());
                 e.setHasElevator(d.getHasElevator());
                 yield toDto(apartmentDao.save(e));
@@ -39,6 +38,7 @@ public class RealEstateService {
             case VillaRequest d -> {
                 Villa e = new Villa();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setHasGarden(d.getHasGarden());
                 e.setHasPool(d.getHasPool());
                 e.setNumberOfFloors(d.getNumberOfFloors());
@@ -47,6 +47,7 @@ public class RealEstateService {
             case GarageRequest d -> {
                 Garage e = new Garage();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setWidth(d.getWidth());
                 e.setHeight(d.getHeight());
                 e.setIsElectric(d.getIsElectric());
@@ -55,6 +56,7 @@ public class RealEstateService {
             case BuildingLotRequest d -> {
                 BuildingLot e = new BuildingLot();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setCubature(d.getCubature());
                 e.setPlannedUse(d.getPlannedUse());
                 yield toDto(buildingLotDao.save(e));
@@ -62,6 +64,7 @@ public class RealEstateService {
             case NonBuildingLotRequest d -> {
                 NonBuildingLot e = new NonBuildingLot();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setCropType(d.getCropType());
                 yield toDto(nonBuildingLotDao.save(e));
             }
@@ -79,12 +82,11 @@ public class RealEstateService {
     }
 
     public Object update(int id, RealEstateRequest dto) {
-        enrichWithCoordinates(dto);
-
         return switch (dto) {
             case ApartmentRequest d -> {
                 Apartment e = new Apartment();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setId(id);
                 e.setFloor(d.getFloor());
                 e.setHasElevator(d.getHasElevator());
@@ -93,6 +95,7 @@ public class RealEstateService {
             case VillaRequest d -> {
                 Villa e = new Villa();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setId(id);
                 e.setHasGarden(d.getHasGarden());
                 e.setHasPool(d.getHasPool());
@@ -102,6 +105,7 @@ public class RealEstateService {
             case GarageRequest d -> {
                 Garage e = new Garage();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setId(id);
                 e.setWidth(d.getWidth());
                 e.setHeight(d.getHeight());
@@ -111,6 +115,7 @@ public class RealEstateService {
             case BuildingLotRequest d -> {
                 BuildingLot e = new BuildingLot();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setId(id);
                 e.setCubature(d.getCubature());
                 e.setPlannedUse(d.getPlannedUse());
@@ -119,6 +124,7 @@ public class RealEstateService {
             case NonBuildingLotRequest d -> {
                 NonBuildingLot e = new NonBuildingLot();
                 mapCommon(e, d);
+                enrichWithCoordinates(d, e);
                 e.setId(id);
                 e.setCropType(d.getCropType());
                 yield toDto(nonBuildingLotDao.update(e));
@@ -140,7 +146,7 @@ public class RealEstateService {
         return toDto(realEstate);
     }
 
-    private void enrichWithCoordinates(RealEstateRequest dto) {
+    private void enrichWithCoordinates(RealEstateRequest dto, RealEstate entity) {
         double[] coords = geocodingService.geocodifica(
                 dto.getStreet(),
                 dto.getCivicNumber(),
@@ -148,9 +154,9 @@ public class RealEstateService {
                 dto.getCap(),
                 dto.getProvince()
         );
-        dto.setLatit(coords[0]);
-        dto.setLongit(coords[1]);
-        dto.setAddress(
+        entity.setLatit(coords[0]);
+        entity.setLongit(coords[1]);
+        entity.setAddress(
                 dto.getStreet() + " " + dto.getCivicNumber() + ", " +
                         dto.getCap() + " " + dto.getCity() + " (" + dto.getProvince() + ")"
         );
@@ -163,9 +169,6 @@ public class RealEstateService {
         entity.setNumberOfRooms(dto.getNumberOfRooms());
         entity.setDescription(dto.getDescription());
         entity.setSquareMetres(dto.getSquareMetres());
-        entity.setLatit(dto.getLatit());
-        entity.setLongit(dto.getLongit());
-        entity.setAddress(dto.getAddress());
     }
 
     private RealEstateDto toDto(RealEstate e) {
