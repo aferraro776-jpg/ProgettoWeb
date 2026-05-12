@@ -22,6 +22,7 @@ import java.util.Random;
 public class PostService {
     private final PostDao postDao;
     private final RealEstateService realEstateService;
+    private final TelegramService telegramService;
 
     public PostDto save(PostRequest postDto, int sellerId) {
         return buildAndSavePost(
@@ -47,8 +48,7 @@ public class PostService {
         );
     }
 
-    private PostDto buildAndSavePost(String title, String description, List<Photo> photos,
-                                     double currentPrice, int realEstateId, int sellerId) {
+    private PostDto buildAndSavePost(String title, String description, List<Photo> photos, double currentPrice, int realEstateId, int sellerId) {
         Post post = new Post();
         post.setTitle(title);
         post.setDescription(description);
@@ -60,6 +60,22 @@ public class PostService {
         post.setRealEstateId(realEstateId);
         post.setId(generateUniqueId());
         post = postDao.save(post);
+
+        try {
+            Object re = realEstateService.findById(realEstateId);
+            if (re instanceof RealEstateDto reDto) {
+                telegramService.inviaAnnuncio(
+                        title,
+                        description,
+                        currentPrice,
+                        reDto.getAddress(),
+                        post.getId()
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Telegram skip: " + e.getMessage());
+        }
+
         return toDto(post);
     }
 
