@@ -1,12 +1,9 @@
 package it.unical.progettoweb.dao.impl;
 
-import it.unical.progettoweb.dao.Dao;
 import it.unical.progettoweb.dao.PhotoDao;
-import it.unical.progettoweb.dao.PostDao;
 import it.unical.progettoweb.mapper.PhotoRowMapper;
 import it.unical.progettoweb.model.Photo;
 import it.unical.progettoweb.proxy.PhotoCollection;
-import it.unical.progettoweb.proxy.PhotoList;
 import it.unical.progettoweb.proxy.PhotoProxy;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
